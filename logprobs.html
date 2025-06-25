@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Confidence Demonstration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>AI Confidence Demonstration Tool</h1>
+    </div>
+
+    <div class="legend">
+        <div class="legend-title">Confidence Levels (hover over coloured tokens for details):</div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-color confidence-high"></div>
+                <span>High Confidence (>70%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color confidence-medium"></div>
+                <span>Medium Confidence (30-70%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color confidence-low"></div>
+                <span>Low Confidence (<30%)</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="apiKeyContainer" class="api-key-container">
+        <p>Please enter your OpenRouter API key to begin:</p>
+        <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Enter OpenRouter API key">
+        <button class="api-key-button" onclick="setApiKey()">Set API Key</button>
+    </div>
+
+    <div class="chat-container" id="chatContainer" style="display: none;">
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="input-field" 
+                    placeholder="Type your message here..."
+                    rows="1"
+                ></textarea>
+                <button class="send-button" id="sendButton" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
