@@ -13,7 +13,7 @@ function setApiKey() {
     }
 }
 
-function addMessage(content, isUser = false, isLoading = false) {
+function addMessage(content, isUser = false, isLoading = false, tokenUsage = null) {
     const messagesContainer = document.getElementById('messages');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
@@ -38,6 +38,29 @@ function addMessage(content, isUser = false, isLoading = false) {
         `;
     } else {
         messageContent.innerHTML = content;
+        
+        // Add token usage info for AI responses
+        if (!isUser && tokenUsage) {
+            const tokenInfo = document.createElement('div');
+            tokenInfo.className = 'token-usage';
+            tokenInfo.innerHTML = `
+                <div class="token-stats">
+                    <span class="token-stat">
+                        <span class="token-label">Input:</span>
+                        <span class="token-count">${tokenUsage.prompt_tokens} tokens</span>
+                    </span>
+                    <span class="token-stat">
+                        <span class="token-label">Output:</span>
+                        <span class="token-count">${tokenUsage.completion_tokens} tokens</span>
+                    </span>
+                    <span class="token-stat">
+                        <span class="token-label">Total:</span>
+                        <span class="token-count">${tokenUsage.total_tokens} tokens</span>
+                    </span>
+                </div>
+            `;
+            messageContent.appendChild(tokenInfo);
+        }
     }
     
     messageDiv.appendChild(avatar);
@@ -140,13 +163,14 @@ async function sendMessage() {
         const data = await response.json();
         const aiResponse = data.choices[0].message.content;
         const logprobs = data.choices[0].logprobs;
+        const tokenUsage = data.usage;
         
         // Remove loading message
         loadingMessage.remove();
         
-        // Add AI response with confidence highlighting
+        // Add AI response with confidence highlighting and token usage
         const processedResponse = processResponseWithLogprobs(aiResponse, logprobs);
-        addMessage(processedResponse, false);
+        addMessage(processedResponse, false, false, tokenUsage);
         
     } catch (error) {
         // Remove loading message
@@ -216,15 +240,25 @@ function positionTooltip(token, tooltip) {
 
 // Add event listeners for tooltip positioning
 document.addEventListener('DOMContentLoaded', function() {
+    let currentTooltip = null;
+    
     // Use event delegation for dynamically added tooltips
     document.addEventListener('mouseenter', function(e) {
         if (e.target.classList.contains('confidence-token')) {
+            // Hide any currently visible tooltip
+            if (currentTooltip) {
+                currentTooltip.classList.remove('visible');
+            }
+            
             const tooltip = e.target.querySelector('.tooltip');
             if (tooltip) {
+                currentTooltip = tooltip;
                 // Position the tooltip before showing it
                 setTimeout(() => {
-                    positionTooltip(e.target, tooltip);
-                    tooltip.classList.add('visible');
+                    if (currentTooltip === tooltip) { // Make sure we're still hovering the same token
+                        positionTooltip(e.target, tooltip);
+                        tooltip.classList.add('visible');
+                    }
                 }, 10);
             }
         }
@@ -235,6 +269,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const tooltip = e.target.querySelector('.tooltip');
             if (tooltip) {
                 tooltip.classList.remove('visible');
+                if (currentTooltip === tooltip) {
+                    currentTooltip = null;
+                }
+            }
+        }
+    }, true);
+    
+    // Also hide tooltips when mouse leaves the messages area entirely
+    document.addEventListener('mouseleave', function(e) {
+        if (e.target.id === 'messages' || e.target.closest('#messages')) {
+            if (currentTooltip) {
+                currentTooltip.classList.remove('visible');
+                currentTooltip = null;
             }
         }
     }, true);

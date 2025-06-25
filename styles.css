@@ -30,9 +30,10 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-width: 800px;
+    width: 75%;
+    max-width: 1200px;
+    min-width: 600px;
     margin: 0 auto;
-    width: 100%;
     background: white;
     box-shadow: 0 0 0 1px rgba(0,0,0,.1);
 }
@@ -244,10 +245,6 @@ body {
     border-top: none;
 }
 
-.confidence-token:hover .tooltip {
-    opacity: 1;
-}
-
 .tooltip.visible {
     opacity: 1;
 }
@@ -315,4 +312,39 @@ body {
     width: 1rem;
     height: 1rem;
     border-radius: 0.25rem;
+}
+
+.token-usage {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.token-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.token-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.token-label {
+    font-weight: 500;
+    color: #374151;
+}
+
+.token-count {
+    background: #f3f4f6;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #1f2937;
 }
