@@ -1,4 +1,4 @@
-name: Unpublish from Cloudflare Pages
+name: Redirect Site to Personal Website
 
 on:
   schedule:
@@ -7,24 +7,24 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: 'Type "confirm" to unpublish the site'
+        description: 'Type "confirm" to redirect the site'
         required: true
         type: string
 
 jobs:
-  unpublish:
+  redirect:
     runs-on: ubuntu-latest
-    name: Unpublish AI Confidence Demo
+    name: Redirect AI Confidence Demo
 
     steps:
       - name: ✅ Validate manual trigger
         if: github.event_name == 'workflow_dispatch'
         run: |
           if [ "${{ github.event.inputs.confirm }}" != "confirm" ]; then
-            echo "❌ Unpublish operation not confirmed. Please type 'confirm' to proceed."
+            echo "❌ Redirect operation not confirmed. Please type 'confirm' to proceed."
             exit 1
           fi
-          echo "✅ Manual unpublish confirmed"
+          echo "✅ Manual redirect confirmed"
 
       - name: 📁 Checkout repository
         uses: actions/checkout@v4
@@ -38,93 +38,56 @@ jobs:
       - name: 🔧 Install Wrangler CLI
         run: npm install -g wrangler
 
-      - name: 🗑️ Delete Cloudflare Pages deployment
+      - name: � Create redirect configuration
+        run: |
+          echo "� Creating _redirects file to redirect all traffic to https://www.edwardjensen.net"
+          mkdir -p redirect-build
+          echo "/* https://www.edwardjensen.net 302" > redirect-build/_redirects
+          echo "� Created _redirects file:"
+          cat redirect-build/_redirects
+
+      - name: � Deploy redirect to Cloudflare Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          echo "🗑️ Deleting all deployments for project: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}"
+          echo "🚀 Deploying redirect configuration to Cloudflare Pages..."
           
-          # List deployments with full error output for debugging
-          echo "🔍 Listing deployments..."
-          DEPLOYMENT_LIST=$(wrangler pages deployment list --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} 2>&1)
-          EXIT_CODE=$?
+          wrangler pages deploy redirect-build \
+            --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} \
+            --compatibility-date=2024-01-01
           
-          echo "📋 Raw wrangler output:"
-          echo "$DEPLOYMENT_LIST"
-          echo "Exit code: $EXIT_CODE"
-          
-          # Check if the command succeeded
-          if [ $EXIT_CODE -ne 0 ]; then
-            echo "❌ Failed to list deployments (exit code: $EXIT_CODE)"
-            echo "Output: $DEPLOYMENT_LIST"
-          else
-            echo "🗑️ Attempting to delete all deployments..."
-            
-            # Use wrangler's built-in functionality to delete all deployments
-            # First try the newer wrangler command if available
-            if wrangler pages deployment list --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --format=json 2>/dev/null | jq -r '.[].id' 2>/dev/null | while read -r deployment_id; do
-              if [ -n "$deployment_id" ]; then
-                echo "🗑️ Deleting deployment: $deployment_id"
-                wrangler pages deployment delete "$deployment_id" --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --yes
-              fi
-            done; then
-              echo "✅ Attempted JSON-based deletion"
-            else
-              echo "📝 JSON method not available, trying text parsing..."
-              
-              # Extract any hash-like strings that could be deployment IDs
-              DEPLOYMENT_IDS=$(echo "$DEPLOYMENT_LIST" | grep -oE '[a-f0-9]{8,}' | sort -u)
-              
-              if [ -n "$DEPLOYMENT_IDS" ]; then
-                echo "🔍 Found potential deployment IDs:"
-                echo "$DEPLOYMENT_IDS"
-                
-                # Delete each deployment
-                for deployment_id in $DEPLOYMENT_IDS; do
-                  echo "🗑️ Attempting to delete deployment: $deployment_id"
-                  wrangler pages deployment delete "$deployment_id" --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --yes 2>&1 || echo "⚠️ Failed to delete $deployment_id (may not be a valid ID)"
-                done
-              else
-                echo "ℹ️ No deployment IDs found in output"
-              fi
-            fi
-            
-            # As a final cleanup attempt, try to delete the entire project
-            echo "🧹 Final cleanup: attempting to delete project..."
-            wrangler pages project delete ${{ secrets.CLOUDFLARE_PROJECT_NAME }} --yes 2>&1 || echo "ℹ️ Project deletion failed (may already be deleted)"
-          fi
-          
-          echo "🏁 Deployment cleanup completed"
+          echo "✅ Successfully deployed redirect configuration"
 
-      - name: 📝 Create unpublish summary
+      - name: 📝 Create redirect summary
         run: |
-          echo "## 🗑️ Unpublish Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## � Redirect Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Project**: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Unpublished at**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Redirected at**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Redirect Target**: https://www.edwardjensen.net" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "🕰️ **Reason**: Scheduled daily cleanup" >> $GITHUB_STEP_SUMMARY
+            echo "🕰️ **Reason**: Scheduled daily redirect" >> $GITHUB_STEP_SUMMARY
           else
             echo "👤 **Reason**: Manual trigger" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Status**: Successfully unpublished from Cloudflare Pages" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Status**: Successfully redirected to personal website" >> $GITHUB_STEP_SUMMARY
 
-      - name: 📧 Notify on scheduled unpublish
+      - name: 📧 Notify on scheduled redirect
         if: github.event_name == 'schedule'
         uses: actions/github-script@v7
         with:
           script: |
             const { owner, repo } = context.repo;
             
-            // Create an issue to notify about the scheduled unpublish
+            // Create an issue to notify about the scheduled redirect
             await github.rest.issues.create({
               owner,
               repo,
-              title: `🗑️ AI Confidence Demo automatically unpublished - ${new Date().toISOString().split('T')[0]}`,
-              body: `## Scheduled Unpublish Notification\n\nThe AI Confidence Demo has been automatically unpublished from Cloudflare Pages as part of the daily cleanup schedule.\n\n**Time**: ${new Date().toISOString()}\n**Trigger**: Scheduled cron job (07:00 UTC)\n\n---\n\nTo republish the demo, run the "Deploy to Cloudflare Pages" workflow manually.`,
+              title: `� AI Confidence Demo automatically redirected - ${new Date().toISOString().split('T')[0]}`,
+              body: `## Scheduled Redirect Notification\n\nThe AI Confidence Demo has been automatically redirected to https://www.edwardjensen.net as part of the daily cleanup schedule.\n\n**Time**: ${new Date().toISOString()}\n**Trigger**: Scheduled cron job (07:00 UTC)\n**Redirect Type**: 302 (Temporary Redirect)\n\n---\n\nTo restore the original demo, run the "Deploy to Cloudflare Pages" workflow manually.`,
               labels: ['automated', 'deployment']
             });
