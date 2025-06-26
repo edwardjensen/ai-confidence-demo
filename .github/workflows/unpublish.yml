@@ -66,7 +66,7 @@ jobs:
             if wrangler pages deployment list --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --format=json 2>/dev/null | jq -r '.[].id' 2>/dev/null | while read -r deployment_id; do
               if [ -n "$deployment_id" ]; then
                 echo "🗑️ Deleting deployment: $deployment_id"
-                wrangler pages deployment delete "$deployment_id" --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --force
+                wrangler pages deployment delete "$deployment_id" --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --yes
               fi
             done; then
               echo "✅ Attempted JSON-based deletion"
@@ -83,7 +83,7 @@ jobs:
                 # Delete each deployment
                 for deployment_id in $DEPLOYMENT_IDS; do
                   echo "🗑️ Attempting to delete deployment: $deployment_id"
-                  wrangler pages deployment delete "$deployment_id" --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --force 2>&1 || echo "⚠️ Failed to delete $deployment_id (may not be a valid ID)"
+                  wrangler pages deployment delete "$deployment_id" --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --yes 2>&1 || echo "⚠️ Failed to delete $deployment_id (may not be a valid ID)"
                 done
               else
                 echo "ℹ️ No deployment IDs found in output"
@@ -92,7 +92,7 @@ jobs:
             
             # As a final cleanup attempt, try to delete the entire project
             echo "🧹 Final cleanup: attempting to delete project..."
-            wrangler pages project delete ${{ secrets.CLOUDFLARE_PROJECT_NAME }} --force 2>&1 || echo "ℹ️ Project deletion failed (may already be deleted)"
+            wrangler pages project delete ${{ secrets.CLOUDFLARE_PROJECT_NAME }} --yes 2>&1 || echo "ℹ️ Project deletion failed (may already be deleted)"
           fi
           
           echo "🏁 Deployment cleanup completed"
