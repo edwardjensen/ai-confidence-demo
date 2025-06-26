@@ -35,7 +35,10 @@ jobs:
           node-version: '22.x'
           cache: 'npm'
 
-      - name: 🗑️ Delete Cloudflare Pages deployment
+      - name: � Install Wrangler CLI
+        run: npm install -g wrangler
+
+      - name: �🗑️ Delete Cloudflare Pages deployment
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
