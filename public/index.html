@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Confidence Demonstration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>AI Confidence Demonstration Tool</h1>
+        <div class="header-subtitle">Production Demo</div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-title">Confidence Levels (hover over coloured tokens for details):</div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-color confidence-high"></div>
+                <span>High Confidence (>70%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color confidence-medium"></div>
+                <span>Medium Confidence (30-70%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color confidence-low"></div>
+                <span>Low Confidence (<30%)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="production-notice">
+        <p>🚀 This is a production demonstration. API access is pre-configured.</p>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="input-field" 
+                    placeholder="Type your message here..."
+                    rows="1"
+                ></textarea>
+                <button class="send-button" id="sendButton" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Environment variables will be injected here by build process -->
+    <script id="config">
+        window.AI_DEMO_CONFIG = {
+            apiKey: '%API_KEY%',
+            isProduction: true
+        };
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

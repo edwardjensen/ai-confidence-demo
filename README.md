@@ -13,6 +13,7 @@ For a detailed explanation of how this works and the concepts behind AI confiden
 - **Improved tooltip system** - No more overlapping tooltips, clean display
 - Clean, modern UI with responsive design (75% screen width)
 - Log probabilities analysis for each AI response token
+- **Production deployment** - Deploy to Cloudflare Pages with automated publishing/unpublishing
 
 ## Files
 
@@ -127,3 +128,12 @@ Works with all modern browsers including:
 - Firefox
 - Safari
 - Edge
+
+## Deployment Options
+
+### Local Development
+Perfect for testing and development with manual API key input.
+
+### Production Deployment
+Deploy to Cloudflare Pages with pre-configured API key and automated workflows.
+📖 **See [PRODUCTION.md](PRODUCTION.md) for complete setup guide**
