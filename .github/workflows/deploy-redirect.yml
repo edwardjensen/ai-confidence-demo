@@ -1,0 +1,27 @@
+name: Deploy Redirect Site to Cloudflare Pages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * *'  # Daily at 7:00 UTC
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Create redirect site
+        run: |
+          mkdir -p dist
+          echo "/* https://www.edwardjensen.net/ 302" > dist/_redirects
+          
+      - name: 🚀 Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --commit-dirty=true
