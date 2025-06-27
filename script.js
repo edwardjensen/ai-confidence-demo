@@ -183,7 +183,7 @@ async function sendMessage() {
                 ],
                 logprobs: true,
                 top_logprobs: 5,
-                max_tokens: 500,
+                max_tokens: 250,
                 temperature: 0.7
             })
         });
