@@ -1,3 +1,6 @@
+// Load environment variables from .env.local file
+require('dotenv').config({ path: '.env.local' });
+
 const express = require('express');
 const path = require('path');
 const open = require('open');
@@ -14,6 +17,27 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
+});
+
+// Parse JSON bodies
+app.use(express.json());
+
+// API endpoint to get configuration (including API key)
+app.get('/api/config', (req, res) => {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    
+    if (!apiKey) {
+        return res.json({
+            success: false,
+            message: 'OPENROUTER_API_KEY not found in environment variables'
+        });
+    }
+    
+    res.json({
+        success: true,
+        apiKey: apiKey,
+        isProduction: false
+    });
 });
 
 // Serve the main page at root

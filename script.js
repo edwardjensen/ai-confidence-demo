@@ -1,5 +1,37 @@
 let apiKey = '';
 
+// Try to load API key from local environment on page load
+async function loadLocalConfig() {
+    try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        
+        if (config.success && config.apiKey) {
+            apiKey = config.apiKey;
+            document.getElementById('apiKeyContainer').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'flex';
+            document.getElementById('messageInput').focus();
+            
+            // Show a success message
+            const messagesContainer = document.getElementById('messages');
+            const welcomeMessage = document.createElement('div');
+            welcomeMessage.className = 'system-message';
+            welcomeMessage.innerHTML = `
+                <div class="system-content">
+                    ✅ API key loaded from environment variables.<br>
+                    Ready to chat! Try asking something to see confidence levels.
+                </div>
+            `;
+            messagesContainer.appendChild(welcomeMessage);
+            
+            return true;
+        }
+    } catch (error) {
+        console.log('Local config not available, falling back to manual input');
+    }
+    return false;
+}
+
 function setApiKey() {
     const input = document.getElementById('apiKeyInput');
     apiKey = input.value.trim();
@@ -202,6 +234,18 @@ document.getElementById('messageInput').addEventListener('keydown', function(e) 
 document.getElementById('apiKeyInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
         setApiKey();
+    }
+});
+
+// Load config on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    // Try to load local config first
+    const configLoaded = await loadLocalConfig();
+    
+    if (!configLoaded) {
+        // Show manual input if config couldn't be loaded
+        document.getElementById('apiKeyContainer').style.display = 'block';
+        document.getElementById('chatContainer').style.display = 'none';
     }
 });
 

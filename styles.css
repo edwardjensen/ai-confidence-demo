@@ -348,3 +348,20 @@ body {
     font-weight: 500;
     color: #1f2937;
 }
+
+/* System messages */
+.system-message {
+    align-self: center;
+    max-width: 80%;
+}
+
+.system-content {
+    background: #f0f9ff;
+    border: 1px solid #0ea5e9;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #0369a1;
+    text-align: center;
+    line-height: 1.4;
+}

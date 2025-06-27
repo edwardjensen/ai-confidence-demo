@@ -37,7 +37,17 @@ Make sure you have Node.js installed (version 14 or higher). You can download it
 npm install
 ```
 
-1. **Start the server:**
+2. **Configure API Key (Optional - for automatic loading):**
+
+Create a `.env.local` file in the project root with your OpenRouter API key:
+
+```bash
+OPENROUTER_API_KEY=sk-or-v1-your-actual-api-key-here
+```
+
+If you create this file, the application will automatically load your API key and skip the manual input step.
+
+3. **Start the server:**
 
 ```bash
 npm start
@@ -57,13 +67,32 @@ The server will automatically:
 ## Setup
 
 1. Start the server using one of the methods above
-2. Enter your OpenRouter API key when prompted
-3. Start chatting with the AI
-4. Hover over colored tokens to see confidence levels and alternatives
+2. **Automatic Setup (Recommended)**: If you have a `.env.local` file with your API key, the application will automatically load it and be ready to use
+3. **Manual Setup**: If no environment file is found, enter your OpenRouter API key when prompted
+4. Start chatting with the AI
+5. Hover over colored tokens to see confidence levels and alternatives
 
-## API Key
+## API Key Configuration
 
 You'll need an OpenRouter API key to use this tool. Get one at [openrouter.ai](https://openrouter.ai/).
+
+### Method 1: Environment Variable (Recommended for Development)
+
+Create a `.env.local` file in the project root:
+
+```bash
+OPENROUTER_API_KEY=sk-or-v1-your-actual-api-key-here
+```
+
+Benefits:
+
+- Automatic loading on startup
+- No need to enter the key manually each time
+- Secure local development workflow
+
+### Method 2: Manual Entry
+
+If you don't have a `.env.local` file, the application will prompt you to enter your API key manually through the web interface.
 
 The tool uses the `openai/gpt-4o-mini` model with log probabilities enabled to show confidence levels.
 
@@ -118,6 +147,7 @@ This helps you monitor API usage and understand the cost implications of your co
 
 - **API Key Safety**: Your OpenRouter API key is only stored in your browser's memory and is never sent to any server other than OpenRouter's official API
 - **Local Server**: The web server runs locally on your machine and does not collect or transmit any data
+- **Environment Variables**: When using `.env.local`, your API key is only accessible to your local development server and never exposed to external services
 - **Client-Side Processing**: All confidence visualization happens in your browser
 
 ## Browser Compatibility
@@ -132,8 +162,10 @@ Works with all modern browsers including:
 ## Deployment Options
 
 ### Local Development
+
 Perfect for testing and development with manual API key input.
 
 ### Production Deployment
+
 Deploy to Cloudflare Pages with pre-configured API key and automated workflows.
 📖 **See [PRODUCTION.md](PRODUCTION.md) for complete setup guide**
