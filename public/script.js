@@ -65,7 +65,7 @@ function setApiKey() {
     }
 }
 
-function addMessage(content, isUser = false, isLoading = false, tokenUsage = null) {
+function addMessage(content, isUser = false, isLoading = false, tokenUsage = null, messageTemperature = null) {
     const messagesContainer = document.getElementById('messages');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
@@ -95,6 +95,11 @@ function addMessage(content, isUser = false, isLoading = false, tokenUsage = nul
         if (!isUser && tokenUsage) {
             const tokenInfo = document.createElement('div');
             tokenInfo.className = 'token-usage';
+            const temperatureDisplay = messageTemperature !== null ? `
+                    <span class="token-stat">
+                        <span class="token-label">Temperature:</span>
+                        <span class="token-count">${messageTemperature.toFixed(1)}</span>
+                    </span>` : '';
             tokenInfo.innerHTML = `
                 <div class="token-stats">
                     <span class="token-stat">
@@ -108,7 +113,7 @@ function addMessage(content, isUser = false, isLoading = false, tokenUsage = nul
                     <span class="token-stat">
                         <span class="token-label">Total:</span>
                         <span class="token-count">${tokenUsage.total_tokens} tokens</span>
-                    </span>
+                    </span>${temperatureDisplay}
                 </div>
             `;
             messageContent.appendChild(tokenInfo);
@@ -222,7 +227,7 @@ async function sendMessage() {
         
         // Add AI response with confidence highlighting and token usage
         const processedResponse = processResponseWithLogprobs(aiResponse, logprobs);
-        addMessage(processedResponse, false, false, tokenUsage);
+        addMessage(processedResponse, false, false, tokenUsage, temperature);
         
     } catch (error) {
         // Remove loading message
