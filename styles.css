@@ -475,3 +475,192 @@ body {
     font-weight: 600;
     color: #007aff;
 }
+
+/* Output Mode Toggle Styles */
+.output-mode-control {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e5e5e7;
+}
+
+.output-mode-label {
+    text-align: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.output-mode-toggle {
+    display: flex;
+    justify-content: center;
+}
+
+.toggle-container {
+    position: relative;
+    display: inline-block;
+}
+
+.toggle-checkbox {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding: 0 4rem;
+}
+
+.toggle-slider {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 3rem;
+    height: 1.5rem;
+    background-color: #007aff;
+    border-radius: 0.75rem;
+    transition: background-color 0.3s;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.25rem;
+    height: 1.25rem;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.toggle-checkbox:checked + .toggle-label .toggle-slider {
+    background-color: #10a37f;
+}
+
+.toggle-checkbox:checked + .toggle-label .toggle-slider::before {
+    transform: translateX(1.5rem);
+}
+
+.toggle-text-left,
+.toggle-text-right {
+    position: absolute;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #666;
+    transition: color 0.3s;
+}
+
+.toggle-text-left {
+    left: 0;
+}
+
+.toggle-text-right {
+    right: 0;
+}
+
+.toggle-checkbox:not(:checked) + .toggle-label .toggle-text-left {
+    color: #007aff;
+    font-weight: 600;
+}
+
+.toggle-checkbox:checked + .toggle-label .toggle-text-right {
+    color: #10a37f;
+    font-weight: 600;
+}
+
+/* Markdown Styling */
+.markdown-content {
+    line-height: 1.6;
+    color: #1a1a1a;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    margin: 1rem 0 0.5rem 0;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.markdown-content h1 { font-size: 1.5rem; }
+.markdown-content h2 { font-size: 1.3rem; }
+.markdown-content h3 { font-size: 1.1rem; }
+
+.markdown-content p {
+    margin: 0.5rem 0;
+}
+
+.markdown-content strong {
+    font-weight: 600;
+}
+
+.markdown-content em {
+    font-style: italic;
+}
+
+.markdown-content code {
+    background: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: 'SFMono-Regular', 'Monaco', 'Consolas', monospace;
+    font-size: 0.9em;
+    color: #d63384;
+}
+
+.markdown-content pre {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    font-family: 'SFMono-Regular', 'Monaco', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.markdown-content pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    color: inherit;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.markdown-content li {
+    margin: 0.25rem 0;
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid #007aff;
+    margin: 1rem 0;
+    padding-left: 1rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.markdown-content a {
+    color: #007aff;
+    text-decoration: none;
+}
+
+.markdown-content a:hover {
+    text-decoration: underline;
+}

@@ -1,5 +1,70 @@
 let apiKey = '';
 let temperature = 0.7; // Default temperature value
+let outputMode = 'confidence'; // 'confidence' or 'markdown'
+
+// Simple markdown parser
+function parseMarkdown(text) {
+    // Escape HTML first
+    text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    // Headers
+    text = text.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+    text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+    text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+    
+    // Bold and italic
+    text = text.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    text = text.replace(/___([^_]+)___/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    text = text.replace(/_([^_]+)_/g, '<em>$1</em>');
+    
+    // Code blocks
+    text = text.replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // Links
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    
+    // Lists
+    text = text.replace(/^\* (.+$)/gm, '<li>$1</li>');
+    text = text.replace(/^- (.+$)/gm, '<li>$1</li>');
+    text = text.replace(/^(\d+)\. (.+$)/gm, '<li>$2</li>');
+    
+    // Wrap consecutive list items in ul/ol tags
+    text = text.replace(/(<li>.*<\/li>)/g, function(match) {
+        return '<ul>' + match + '</ul>';
+    });
+    
+    // Fix multiple consecutive ul tags
+    text = text.replace(/<\/ul>\s*<ul>/g, '');
+    
+    // Blockquotes
+    text = text.replace(/^> (.+$)/gm, '<blockquote>$1</blockquote>');
+    
+    // Line breaks
+    text = text.replace(/\n\n/g, '</p><p>');
+    text = text.replace(/\n/g, '<br>');
+    
+    // Wrap in paragraphs
+    if (text && !text.startsWith('<')) {
+        text = '<p>' + text + '</p>';
+    }
+    
+    // Clean up empty paragraphs
+    text = text.replace(/<p><\/p>/g, '');
+    text = text.replace(/<p>(<h[1-6]>)/g, '$1');
+    text = text.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+    text = text.replace(/<p>(<blockquote>)/g, '$1');
+    text = text.replace(/(<\/blockquote>)<\/p>/g, '$1');
+    text = text.replace(/<p>(<ul>)/g, '$1');
+    text = text.replace(/(<\/ul>)<\/p>/g, '$1');
+    text = text.replace(/<p>(<pre>)/g, '$1');
+    text = text.replace(/(<\/pre>)<\/p>/g, '$1');
+    
+    return text;
+}
 
 // Try to load API key from local environment on page load
 async function loadLocalConfig() {
@@ -201,8 +266,14 @@ async function sendMessage() {
         // Remove loading message
         loadingMessage.remove();
         
-        // Add AI response with confidence highlighting and token usage
-        const processedResponse = processResponseWithLogprobs(aiResponse, logprobs);
+        // Process response based on current output mode
+        let processedResponse;
+        if (outputMode === 'markdown') {
+            processedResponse = `<div class="markdown-content">${parseMarkdown(aiResponse)}</div>`;
+        } else {
+            processedResponse = processResponseWithLogprobs(aiResponse, logprobs);
+        }
+        
         addMessage(processedResponse, false, false, tokenUsage);
         
     } catch (error) {
@@ -351,6 +422,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Convert slider value (0-20) to temperature (0.0-2.0)
             temperature = parseFloat(this.value) / 10;
             temperatureValue.textContent = temperature.toFixed(1);
+        });
+    }
+    
+    // Output mode toggle functionality
+    const outputModeToggle = document.getElementById('outputModeToggle');
+    
+    if (outputModeToggle) {
+        outputModeToggle.addEventListener('change', function() {
+            outputMode = this.checked ? 'markdown' : 'confidence';
+            console.log('Output mode changed to:', outputMode);
         });
     }
 });
