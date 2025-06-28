@@ -8,8 +8,8 @@ const open = require('open');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Serve static files from current directory
-app.use(express.static(__dirname));
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // CORS headers for local development
 app.use((req, res, next) => {
@@ -40,9 +40,9 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// Serve the main page at root
+// Serve the main page at root (will automatically serve public/index.html)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'logprobs.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Handle 404s
