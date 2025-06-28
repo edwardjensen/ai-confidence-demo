@@ -578,6 +578,35 @@ div.main-layout div.sidebar div.sidebar-bottom {
     margin: 0;
 }
 
+.build-info {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.build-link a {
+    color: #007aff;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.build-link a:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
+
+.commit-info {
+    margin-top: 0.25rem;
+}
+
+.commit-info code {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.125rem 0.25rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+}
+
 /* Responsive design for mobile */
 @media (max-width: 768px) {
     .main-layout {
@@ -626,6 +655,10 @@ div.main-layout div.sidebar div.sidebar-bottom {
     
     .footer-placeholder {
         padding: 0.75rem 1rem;
+    }
+    
+    .build-info {
+        font-size: 0.7rem;
     }
     
     .production-notice {

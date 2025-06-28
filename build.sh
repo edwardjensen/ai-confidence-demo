@@ -30,5 +30,47 @@ else
     sed -i "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
 fi
 
+# Process build info if available
+if [ -f "build-data/buildinfo.yml" ]; then
+    echo "📋 Injecting build information..."
+    
+    # Read build info values
+    COMMIT=$(grep "^commit:" build-data/buildinfo.yml | cut -d' ' -f2)
+    BUILD_ID=$(grep "^build_id:" build-data/buildinfo.yml | cut -d' ' -f2)
+    BUILD_URL=$(grep "^build_url:" build-data/buildinfo.yml | cut -d' ' -f2-)
+    TIMESTAMP=$(grep "^timestamp:" build-data/buildinfo.yml | cut -d' ' -f2-)
+    
+    # Replace build info placeholders
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        sed -i '' "s|%BUILD_COMMIT%|${COMMIT}|g" dist/index.html
+        sed -i '' "s|%BUILD_ID%|${BUILD_ID}|g" dist/index.html
+        sed -i '' "s|%BUILD_URL%|${BUILD_URL}|g" dist/index.html
+        sed -i '' "s|%BUILD_TIMESTAMP%|${TIMESTAMP}|g" dist/index.html
+    else
+        # Linux
+        sed -i "s|%BUILD_COMMIT%|${COMMIT}|g" dist/index.html
+        sed -i "s|%BUILD_ID%|${BUILD_ID}|g" dist/index.html
+        sed -i "s|%BUILD_URL%|${BUILD_URL}|g" dist/index.html
+        sed -i "s|%BUILD_TIMESTAMP%|${TIMESTAMP}|g" dist/index.html
+    fi
+else
+    echo "⚠️  No build info found, using fallback values..."
+    # Replace with fallback values for local development
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        sed -i '' "s|%BUILD_COMMIT%|local-dev|g" dist/index.html
+        sed -i '' "s|%BUILD_ID%|local|g" dist/index.html
+        sed -i '' "s|%BUILD_URL%|#|g" dist/index.html
+        sed -i '' "s|%BUILD_TIMESTAMP%|$(date -u '+%Y-%m-%d %H:%M:%S UTC')|g" dist/index.html
+    else
+        # Linux
+        sed -i "s|%BUILD_COMMIT%|local-dev|g" dist/index.html
+        sed -i "s|%BUILD_ID%|local|g" dist/index.html
+        sed -i "s|%BUILD_URL%|#|g" dist/index.html
+        sed -i "s|%BUILD_TIMESTAMP%|$(date -u '+%Y-%m-%d %H:%M:%S UTC')|g" dist/index.html
+    fi
+fi
+
 echo "✅ Build completed successfully!"
 echo "📁 Built files are in the 'dist' directory"

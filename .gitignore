@@ -1,3 +1,6 @@
+# Build-time data
+build-data/
+
 # Dependencies
 node_modules/
 npm-debug.log*
