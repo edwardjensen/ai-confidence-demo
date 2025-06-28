@@ -1,36 +1,133 @@
 let apiKey = '';
 let temperature = 0.7; // Default temperature value
+let outputMode = 'confidence'; // 'confidence' or 'markdown'
 
-// Try to load API key from local environment on page load
-async function loadLocalConfig() {
-    try {
-        const response = await fetch('/api/config');
-        const config = await response.json();
-        
-        if (config.success && config.apiKey) {
-            apiKey = config.apiKey;
-            document.getElementById('apiKeyContainer').style.display = 'none';
-            document.getElementById('chatContainer').style.display = 'flex';
-            document.getElementById('messageInput').focus();
-            
-            // Show a success message
-            const messagesContainer = document.getElementById('messages');
-            const welcomeMessage = document.createElement('div');
-            welcomeMessage.className = 'system-message';
-            welcomeMessage.innerHTML = `
-                <div class="system-content">
-                    ✅ API key loaded from environment variables.<br>
-                    Ready to chat! Try asking something to see confidence levels.
-                </div>
-            `;
-            messagesContainer.appendChild(welcomeMessage);
-            
-            return true;
-        }
-    } catch (error) {
-        console.log('Local config not available, falling back to manual input');
+// Simple markdown parser
+function parseMarkdown(text) {
+    // Escape HTML first
+    text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    // Headers
+    text = text.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+    text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+    text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+    
+    // Bold and italic
+    text = text.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    text = text.replace(/___([^_]+)___/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    text = text.replace(/_([^_]+)_/g, '<em>$1</em>');
+    
+    // Code blocks
+    text = text.replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // Links
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    
+    // Lists
+    text = text.replace(/^\* (.+$)/gm, '<li>$1</li>');
+    text = text.replace(/^- (.+$)/gm, '<li>$1</li>');
+    text = text.replace(/^(\d+)\. (.+$)/gm, '<li>$2</li>');
+    
+    // Wrap consecutive list items in ul/ol tags
+    text = text.replace(/(<li>.*<\/li>)/g, function(match) {
+        return '<ul>' + match + '</ul>';
+    });
+    
+    // Fix multiple consecutive ul tags
+    text = text.replace(/<\/ul>\s*<ul>/g, '');
+    
+    // Blockquotes
+    text = text.replace(/^> (.+$)/gm, '<blockquote>$1</blockquote>');
+    
+    // Line breaks
+    text = text.replace(/\n\n/g, '</p><p>');
+    text = text.replace(/\n/g, '<br>');
+    
+    // Wrap in paragraphs
+    if (text && !text.startsWith('<')) {
+        text = '<p>' + text + '</p>';
     }
-    return false;
+    
+    // Clean up empty paragraphs
+    text = text.replace(/<p><\/p>/g, '');
+    text = text.replace(/<p>(<h[1-6]>)/g, '$1');
+    text = text.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+    text = text.replace(/<p>(<blockquote>)/g, '$1');
+    text = text.replace(/(<\/blockquote>)<\/p>/g, '$1');
+    text = text.replace(/<p>(<ul>)/g, '$1');
+    text = text.replace(/(<\/ul>)<\/p>/g, '$1');
+    text = text.replace(/<p>(<pre>)/g, '$1');
+    text = text.replace(/(<\/pre>)<\/p>/g, '$1');
+    
+    return text;
+}
+
+// Initialize the application
+function initializeApp() {
+    // Check if we're in production mode
+    if (window.AI_DEMO_CONFIG && window.AI_DEMO_CONFIG.isProduction) {
+        isProduction = true;
+        apiKey = window.AI_DEMO_CONFIG.apiKey;
+        
+        if (!apiKey || apiKey === '%API_KEY%' || apiKey === 'DEVELOPMENT_MODE_NO_KEY') {
+            if (apiKey === 'DEVELOPMENT_MODE_NO_KEY') {
+                // Local development mode - show API key input
+                showLocalDevMode();
+            } else {
+                showError('Production environment not properly configured. Please contact the administrator.');
+            }
+            return;
+        }
+        
+        // Hide API key container and show chat in production
+        const apiKeyContainer = document.getElementById('apiKeyContainer');
+        if (apiKeyContainer) {
+            apiKeyContainer.style.display = 'none';
+        }
+        
+        const chatContainer = document.getElementById('chatContainer');
+        if (chatContainer) {
+            chatContainer.style.display = 'flex';
+        }
+        
+        document.getElementById('messageInput').focus();
+    } else {
+        // Local development mode - show API key input
+        const apiKeyContainer = document.getElementById('apiKeyContainer');
+        if (apiKeyContainer) {
+            apiKeyContainer.style.display = 'block';
+        }
+        
+        const chatContainer = document.getElementById('chatContainer');
+        if (chatContainer) {
+            chatContainer.style.display = 'none';
+        }
+    }
+}
+
+function showLocalDevMode() {
+    // Show API key input for local development
+    const apiKeyContainer = document.getElementById('apiKeyContainer');
+    if (apiKeyContainer) {
+        apiKeyContainer.style.display = 'block';
+    }
+    
+    const chatContainer = document.getElementById('chatContainer');
+    if (chatContainer) {
+        chatContainer.style.display = 'none';
+    }
+    
+    // Update production notice to show development mode
+    const productionNotice = document.querySelector('.production-notice p');
+    if (productionNotice) {
+        productionNotice.innerHTML = '🔧 Development Mode: Please enter your API key to continue.';
+        productionNotice.parentElement.style.backgroundColor = '#fff3cd';
+        productionNotice.parentElement.style.borderColor = '#ffeaa7';
+    }
 }
 
 function setApiKey() {
@@ -201,8 +298,14 @@ async function sendMessage() {
         // Remove loading message
         loadingMessage.remove();
         
-        // Add AI response with confidence highlighting and token usage
-        const processedResponse = processResponseWithLogprobs(aiResponse, logprobs);
+        // Process response based on current output mode
+        let processedResponse;
+        if (outputMode === 'markdown') {
+            processedResponse = `<div class="markdown-content">${parseMarkdown(aiResponse)}</div>`;
+        } else {
+            processedResponse = processResponseWithLogprobs(aiResponse, logprobs);
+        }
+        
         addMessage(processedResponse, false, false, tokenUsage);
         
     } catch (error) {
@@ -240,14 +343,8 @@ document.getElementById('apiKeyInput').addEventListener('keydown', function(e) {
 
 // Load config on page load
 document.addEventListener('DOMContentLoaded', async function() {
-    // Try to load local config first
-    const configLoaded = await loadLocalConfig();
-    
-    if (!configLoaded) {
-        // Show manual input if config couldn't be loaded
-        document.getElementById('apiKeyContainer').style.display = 'block';
-        document.getElementById('chatContainer').style.display = 'none';
-    }
+    // Initialize the application
+    initializeApp();
 });
 
 // Dynamic tooltip positioning
@@ -351,6 +448,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Convert slider value (0-20) to temperature (0.0-2.0)
             temperature = parseFloat(this.value) / 10;
             temperatureValue.textContent = temperature.toFixed(1);
+        });
+    }
+    
+    // Output mode toggle functionality
+    const outputModeToggle = document.getElementById('outputModeToggle');
+    
+    if (outputModeToggle) {
+        outputModeToggle.addEventListener('change', function() {
+            outputMode = this.checked ? 'markdown' : 'confidence';
+            console.log('Output mode changed to:', outputMode);
         });
     }
 });

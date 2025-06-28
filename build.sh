@@ -15,19 +15,28 @@ cp -r public/* dist/
 
 # Replace API key placeholder in index.html
 if [ -z "$OPENROUTER_API_KEY" ]; then
-    echo "❌ Error: OPENROUTER_API_KEY environment variable is not set"
-    exit 1
-fi
-
-echo "🔑 Injecting API key into build..."
-
-# Replace the placeholder with the actual API key
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS
-    sed -i '' "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
+    echo "⚠️  OPENROUTER_API_KEY environment variable is not set"
+    echo "🔧 Building for local development (API key input will be required)"
+    
+    # For local development, keep the placeholder so the app will show API key input
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS - replace with a clear development placeholder
+        sed -i '' "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/index.html
+    else
+        # Linux
+        sed -i "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/index.html
+    fi
 else
-    # Linux
-    sed -i "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
+    echo "🔑 Injecting API key into build..."
+    
+    # Replace the placeholder with the actual API key
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        sed -i '' "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
+    else
+        # Linux
+        sed -i "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
+    fi
 fi
 
 # Process build info if available
@@ -61,22 +70,22 @@ if [ -f "build-data/buildinfo.yml" ]; then
         sed -i "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/index.html
     fi
 else
-    echo "⚠️  No build info found, using fallback values..."
-    # Replace with fallback values for local development
+    echo "⚠️  No build info found, running in local development mode..."
+    # Replace with development-friendly values
     CURRENT_TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
     CURRENT_TIMESTAMP_ISO=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
     
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
-        sed -i '' "s|%BUILD_COMMIT%|local-dev|g" dist/index.html
-        sed -i '' "s|%BUILD_ID%|local|g" dist/index.html
+        sed -i '' "s|%BUILD_COMMIT%|Development|g" dist/index.html
+        sed -i '' "s|%BUILD_ID%|Local Dev|g" dist/index.html
         sed -i '' "s|%BUILD_URL%|#|g" dist/index.html
         sed -i '' "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/index.html
         sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/index.html
     else
         # Linux
-        sed -i "s|%BUILD_COMMIT%|local-dev|g" dist/index.html
-        sed -i "s|%BUILD_ID%|local|g" dist/index.html
+        sed -i "s|%BUILD_COMMIT%|Development|g" dist/index.html
+        sed -i "s|%BUILD_ID%|Local Dev|g" dist/index.html
         sed -i "s|%BUILD_URL%|#|g" dist/index.html
         sed -i "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/index.html
         sed -i "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/index.html
