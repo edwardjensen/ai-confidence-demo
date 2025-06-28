@@ -44,7 +44,7 @@ jobs:
           echo "build_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> build-data/buildinfo.yml
           echo "environment: ${{ github.event.inputs.environment || 'production' }}" >> build-data/buildinfo.yml
           echo "actor: ${{ github.actor }}" >> build-data/buildinfo.yml
-          echo "timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> build-data/buildinfo.yml
+          echo "timestamp: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> build-data/buildinfo.yml
 
       - name: 🏗️ Build application
         env:

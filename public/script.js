@@ -371,4 +371,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Convert build timestamp to local time
+    function formatBuildTimestamp() {
+        const timestampElement = document.getElementById('buildTimestamp');
+        if (timestampElement) {
+            const utcTimestamp = timestampElement.getAttribute('data-utc');
+            if (utcTimestamp && utcTimestamp !== 'undefined' && utcTimestamp !== '#') {
+                try {
+                    const date = new Date(utcTimestamp);
+                    if (!isNaN(date.getTime())) {
+                        // Format as local time with timezone abbreviation
+                        const options = {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            timeZoneName: 'short'
+                        };
+                        const localTime = date.toLocaleString('en-US', options);
+                        timestampElement.textContent = localTime;
+                        timestampElement.title = `UTC: ${utcTimestamp}`;
+                    }
+                } catch (error) {
+                    console.warn('Could not parse build timestamp:', error);
+                }
+            }
+        }
+    }
+    
+    // Format timestamp when page loads
+    formatBuildTimestamp();
 });

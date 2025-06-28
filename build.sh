@@ -35,10 +35,14 @@ if [ -f "build-data/buildinfo.yml" ]; then
     echo "📋 Injecting build information..."
     
     # Read build info values
-    COMMIT=$(grep "^commit:" build-data/buildinfo.yml | cut -d' ' -f2)
+    COMMIT_FULL=$(grep "^commit:" build-data/buildinfo.yml | cut -d' ' -f2)
+    COMMIT=${COMMIT_FULL:0:7}  # Show only first 7 characters
     BUILD_ID=$(grep "^build_id:" build-data/buildinfo.yml | cut -d' ' -f2)
     BUILD_URL=$(grep "^build_url:" build-data/buildinfo.yml | cut -d' ' -f2-)
-    TIMESTAMP=$(grep "^timestamp:" build-data/buildinfo.yml | cut -d' ' -f2-)
+    TIMESTAMP_ISO=$(grep "^timestamp:" build-data/buildinfo.yml | cut -d' ' -f2)
+    
+    # Create fallback display timestamp from ISO
+    TIMESTAMP_DISPLAY=$(date -d "$TIMESTAMP_ISO" -u '+%Y-%m-%d %H:%M:%S UTC' 2>/dev/null || date -u -j -f "%Y-%m-%dT%H:%M:%SZ" "$TIMESTAMP_ISO" '+%Y-%m-%d %H:%M:%S UTC' 2>/dev/null || echo "$TIMESTAMP_ISO")
     
     # Replace build info placeholders
     if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -46,29 +50,36 @@ if [ -f "build-data/buildinfo.yml" ]; then
         sed -i '' "s|%BUILD_COMMIT%|${COMMIT}|g" dist/index.html
         sed -i '' "s|%BUILD_ID%|${BUILD_ID}|g" dist/index.html
         sed -i '' "s|%BUILD_URL%|${BUILD_URL}|g" dist/index.html
-        sed -i '' "s|%BUILD_TIMESTAMP%|${TIMESTAMP}|g" dist/index.html
+        sed -i '' "s|%BUILD_TIMESTAMP%|${TIMESTAMP_DISPLAY}|g" dist/index.html
+        sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/index.html
     else
         # Linux
         sed -i "s|%BUILD_COMMIT%|${COMMIT}|g" dist/index.html
         sed -i "s|%BUILD_ID%|${BUILD_ID}|g" dist/index.html
         sed -i "s|%BUILD_URL%|${BUILD_URL}|g" dist/index.html
-        sed -i "s|%BUILD_TIMESTAMP%|${TIMESTAMP}|g" dist/index.html
+        sed -i "s|%BUILD_TIMESTAMP%|${TIMESTAMP_DISPLAY}|g" dist/index.html
+        sed -i "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/index.html
     fi
 else
     echo "⚠️  No build info found, using fallback values..."
     # Replace with fallback values for local development
+    CURRENT_TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+    CURRENT_TIMESTAMP_ISO=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+    
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
         sed -i '' "s|%BUILD_COMMIT%|local-dev|g" dist/index.html
         sed -i '' "s|%BUILD_ID%|local|g" dist/index.html
         sed -i '' "s|%BUILD_URL%|#|g" dist/index.html
-        sed -i '' "s|%BUILD_TIMESTAMP%|$(date -u '+%Y-%m-%d %H:%M:%S UTC')|g" dist/index.html
+        sed -i '' "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/index.html
+        sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/index.html
     else
         # Linux
         sed -i "s|%BUILD_COMMIT%|local-dev|g" dist/index.html
         sed -i "s|%BUILD_ID%|local|g" dist/index.html
         sed -i "s|%BUILD_URL%|#|g" dist/index.html
-        sed -i "s|%BUILD_TIMESTAMP%|$(date -u '+%Y-%m-%d %H:%M:%S UTC')|g" dist/index.html
+        sed -i "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/index.html
+        sed -i "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/index.html
     fi
 fi
 
