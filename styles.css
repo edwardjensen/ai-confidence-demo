@@ -498,7 +498,10 @@ body {
 
 .toggle-container {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 200px;
 }
 
 .toggle-checkbox {
@@ -511,10 +514,11 @@ body {
 .toggle-label {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     cursor: pointer;
     user-select: none;
     position: relative;
-    padding: 0 4rem;
+    width: 100%;
 }
 
 .toggle-slider {
@@ -527,6 +531,7 @@ body {
     background-color: #007aff;
     border-radius: 0.75rem;
     transition: background-color 0.3s;
+    z-index: 1;
 }
 
 .toggle-slider::before {
@@ -552,19 +557,12 @@ body {
 
 .toggle-text-left,
 .toggle-text-right {
-    position: absolute;
     font-size: 0.8rem;
     font-weight: 500;
     color: #666;
     transition: color 0.3s;
-}
-
-.toggle-text-left {
-    left: 0;
-}
-
-.toggle-text-right {
-    right: 0;
+    z-index: 2;
+    position: relative;
 }
 
 .toggle-checkbox:not(:checked) + .toggle-label .toggle-text-left {

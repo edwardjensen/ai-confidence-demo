@@ -74,8 +74,13 @@ function initializeApp() {
         isProduction = true;
         apiKey = window.AI_DEMO_CONFIG.apiKey;
         
-        if (!apiKey || apiKey === '%API_KEY%') {
-            showError('Production environment not properly configured. Please contact the administrator.');
+        if (!apiKey || apiKey === '%API_KEY%' || apiKey === 'DEVELOPMENT_MODE_NO_KEY') {
+            if (apiKey === 'DEVELOPMENT_MODE_NO_KEY') {
+                // Local development mode - show API key input
+                showLocalDevMode();
+            } else {
+                showError('Production environment not properly configured. Please contact the administrator.');
+            }
             return;
         }
         
@@ -491,3 +496,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Format timestamp when page loads
     formatBuildTimestamp();
 });
+
+function showLocalDevMode() {
+    // Show API key input for local development
+    const apiKeyContainer = document.getElementById('apiKeyContainer');
+    if (apiKeyContainer) {
+        apiKeyContainer.style.display = 'block';
+    }
+    
+    const chatContainer = document.getElementById('chatContainer');
+    if (chatContainer) {
+        chatContainer.style.display = 'none';
+    }
+    
+    // Update production notice to show development mode
+    const productionNotice = document.querySelector('.production-notice p');
+    if (productionNotice) {
+        productionNotice.innerHTML = '🔧 Development Mode: Please enter your API key to continue.';
+        productionNotice.parentElement.style.backgroundColor = '#fff3cd';
+        productionNotice.parentElement.style.borderColor = '#ffeaa7';
+    }
+}
