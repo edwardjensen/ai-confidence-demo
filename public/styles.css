@@ -629,10 +629,11 @@ div.main-layout div.sidebar div.sidebar-bottom {
 
 .toggle-container {
     position: relative;
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     gap: 1rem;
-    min-width: 200px;
+    min-width: 220px;
+    width: 220px;
 }
 
 .toggle-checkbox {
@@ -643,13 +644,14 @@ div.main-layout div.sidebar div.sidebar-bottom {
 }
 
 .toggle-label {
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
     user-select: none;
     position: relative;
     width: 100%;
+    height: 2rem;
 }
 
 .toggle-slider {
@@ -854,6 +856,16 @@ div.main-layout div.sidebar div.sidebar-bottom {
     
     .chat-container {
         margin: 0.5rem;
+    }
+    
+    .toggle-container {
+        min-width: 180px;
+        gap: 0.75rem;
+    }
+    
+    .toggle-text-left,
+    .toggle-text-right {
+        font-size: 0.75rem;
     }
 }
 

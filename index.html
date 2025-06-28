@@ -5,12 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Confidence Demonstration</title>
     <script>
-        // Redirect to the dist folder (built version)
-        window.location.href = '/dist/';
+        // Smart redirect: check if dist folder exists and has content
+        // In development, try public folder first, fallback to dist
+        async function smartRedirect() {
+            try {
+                // Try to fetch from dist first (production build)
+                const distResponse = await fetch('/dist/index.html', { method: 'HEAD' });
+                if (distResponse.ok) {
+                    window.location.href = '/dist/';
+                    return;
+                }
+            } catch (e) {
+                // Dist not available, continue to public
+            }
+            
+            try {
+                // Try public folder (development)
+                const publicResponse = await fetch('/public/index.html', { method: 'HEAD' });
+                if (publicResponse.ok) {
+                    window.location.href = '/public/';
+                    return;
+                }
+            } catch (e) {
+                // Public not available
+            }
+            
+            // Fallback: show error message
+            document.body.innerHTML = `
+                <h2>⚠️ Application Not Found</h2>
+                <p>Neither the built version (/dist/) nor the development version (/public/) could be found.</p>
+                <p>Please run the build script or check your file structure.</p>
+                <ul>
+                    <li>For production: Run <code>./build.sh</code></li>
+                    <li>For development: Ensure files exist in <code>public/</code> folder</li>
+                </ul>
+            `;
+        }
+        
+        smartRedirect();
     </script>
 </head>
 <body>
-    <p>Redirecting to the main application...</p>
-    <p>If you're not redirected automatically, <a href="/dist/">click here</a>.</p>
+    <p>Redirecting to the application...</p>
+    <p>If you're not redirected automatically, try: <a href="/dist/">Production Build</a> or <a href="/public/">Development Version</a></p>
 </body>
 </html>
