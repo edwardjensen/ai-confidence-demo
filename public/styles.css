@@ -631,9 +631,9 @@ div.main-layout div.sidebar div.sidebar-bottom {
     position: relative;
     display: inline-flex !important;
     align-items: center;
-    gap: 1rem;
-    min-width: 220px;
-    width: 220px;
+    gap: 0.5rem;
+    min-width: 160px;
+    width: 160px;
 }
 
 .toggle-checkbox {
