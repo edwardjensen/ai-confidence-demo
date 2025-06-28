@@ -1,4 +1,5 @@
 let apiKey = '';
+let temperature = 0.7; // Default temperature value
 let isProduction = false;
 
 // Initialize the application
@@ -203,7 +204,7 @@ async function sendMessage() {
                 logprobs: true,
                 top_logprobs: 5,
                 max_tokens: 500,
-                temperature: 0.7
+                temperature: temperature
             })
         });
 
@@ -296,6 +297,23 @@ function positionTooltip(token, tooltip) {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize the app after DOM is loaded
     initializeApp();
+    
+    // Initialize temperature slider
+    const temperatureSlider = document.getElementById('temperatureSlider');
+    const temperatureValue = document.getElementById('temperatureValue');
+    
+    if (temperatureSlider && temperatureValue) {
+        // Update temperature value display and variable when slider changes
+        temperatureSlider.addEventListener('input', function() {
+            const sliderValue = parseInt(this.value);
+            temperature = sliderValue / 10; // Convert slider value (0-20) to temperature (0-2)
+            temperatureValue.textContent = temperature.toFixed(1);
+        });
+        
+        // Initialize display with current temperature
+        temperatureSlider.value = Math.round(temperature * 10);
+        temperatureValue.textContent = temperature.toFixed(1);
+    }
     
     let currentTooltip = null;
     

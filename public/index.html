@@ -7,44 +7,79 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="header">
-        <h1>AI Confidence Demonstration Tool</h1>
-        <div class="header-subtitle">Production Demo</div>
-    </div>
-
-    <div class="legend">
-        <div class="legend-title">Confidence Levels (hover over coloured tokens for details):</div>
-        <div class="legend-items">
-            <div class="legend-item">
-                <div class="legend-color confidence-high"></div>
-                <span>High Confidence (>70%)</span>
+    <div class="main-layout">
+        <div class="chat-section">
+            <div class="production-notice">
+                <p>🚀 This is a production demonstration. API access is pre-configured.</p>
             </div>
-            <div class="legend-item">
-                <div class="legend-color confidence-medium"></div>
-                <span>Medium Confidence (30-70%)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color confidence-low"></div>
-                <span>Low Confidence (<30%)</span>
+            
+            <div class="chat-container" id="chatContainer">
+                <div class="messages" id="messages"></div>
+                <div class="input-area">
+                    <div class="input-container">
+                        <textarea 
+                            id="messageInput" 
+                            class="input-field" 
+                            placeholder="Type your message here..."
+                            rows="1"
+                        ></textarea>
+                        <button class="send-button" id="sendButton" onclick="sendMessage()">➤</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="production-notice">
-        <p>🚀 This is a production demonstration. API access is pre-configured.</p>
-    </div>
+        <div class="sidebar">
+            <div class="sidebar-content">
+                <div class="header">
+                    <h1>AI Confidence Demonstration Tool</h1>
+                    <div class="header-subtitle">Production Demo</div>
+                </div>
 
-    <div class="chat-container" id="chatContainer">
-        <div class="messages" id="messages"></div>
-        <div class="input-area">
-            <div class="input-container">
-                <textarea 
-                    id="messageInput" 
-                    class="input-field" 
-                    placeholder="Type your message here..."
-                    rows="1"
-                ></textarea>
-                <button class="send-button" id="sendButton" onclick="sendMessage()">➤</button>
+                <div class="legend">
+                    <div class="legend-title">Confidence Levels (hover over coloured tokens for details):</div>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-color confidence-high"></div>
+                            <span>High Confidence (>70%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color confidence-medium"></div>
+                            <span>Medium Confidence (30-70%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color confidence-low"></div>
+                            <span>Low Confidence (<30%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="temperature-control">
+                    <div class="temperature-label">
+                        <span>Temperature: </span>
+                        <span id="temperatureValue">0.7</span>
+                    </div>
+                    <input 
+                        type="range" 
+                        id="temperatureSlider" 
+                        class="temperature-slider"
+                        min="0" 
+                        max="20" 
+                        value="7" 
+                        step="1"
+                    >
+                    <div class="temperature-range">
+                        <span>Focused</span>
+                        <span class="detent-label">Start Here</span>
+                        <span>Creative</span>
+                    </div>
+                </div>
+                
+                <div class="footer-placeholder">
+                    <p>Copyright &copy; 2025 Edward Jensen. See on GitHub: <a href="https://github.com/edwardjensen/ai-confidence-demo" target="_blank">edwardjensen/ai-confidence-demo</a>.</p>
+                </div>
             </div>
         </div>
     </div>

@@ -1,4 +1,5 @@
 let apiKey = '';
+let temperature = 0.7; // Default temperature value
 
 // Try to load API key from local environment on page load
 async function loadLocalConfig() {
@@ -184,7 +185,7 @@ async function sendMessage() {
                 logprobs: true,
                 top_logprobs: 5,
                 max_tokens: 250,
-                temperature: 0.7
+                temperature: temperature
             })
         });
 
@@ -340,4 +341,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Temperature slider functionality
+    const temperatureSlider = document.getElementById('temperatureSlider');
+    const temperatureValue = document.getElementById('temperatureValue');
+    
+    if (temperatureSlider && temperatureValue) {
+        temperatureSlider.addEventListener('input', function() {
+            // Convert slider value (0-20) to temperature (0.0-2.0)
+            temperature = parseFloat(this.value) / 10;
+            temperatureValue.textContent = temperature.toFixed(1);
+        });
+    }
 });
