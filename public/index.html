@@ -9,6 +9,27 @@
 <body>
     <div class="main-layout">
         <div class="chat-section">
+            <!-- API Key Input Container (for local development) -->
+            <div id="apiKeyContainer" class="api-key-container" style="display: none;">
+                <div class="api-key-content">
+                    <h2>🔧 Development Mode</h2>
+                    <p>Please enter your OpenRouter API key to continue:</p>
+                    <div class="api-key-input-group">
+                        <input 
+                            type="password" 
+                            id="apiKeyInput" 
+                            placeholder="Enter your OpenRouter API key..."
+                            class="api-key-input"
+                        >
+                        <button id="apiKeySubmit" class="api-key-submit" onclick="setApiKey()">
+                            Connect
+                        </button>
+                    </div>
+                    <p class="api-key-note">
+                        Get your API key from <a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a>
+                    </p>
+                </div>
+            </div>
        
             <div class="chat-container" id="chatContainer">
                 <div class="messages" id="messages"></div>
@@ -106,7 +127,7 @@
     <script id="config">
         window.AI_DEMO_CONFIG = {
             apiKey: '%API_KEY%',
-            isProduction: true
+            isProduction: %IS_PRODUCTION%
         };
     </script>
     <script src="script.js"></script>

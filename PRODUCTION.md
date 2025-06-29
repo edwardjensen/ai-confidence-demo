@@ -8,7 +8,7 @@ The production deployment includes:
 
 - **Static site deployment** to Cloudflare Pages
 - **Automated publishing** via GitHub Actions (manual trigger)
-- **Automated unpublishing** via GitHub Actions (daily at 07:00 UTC)
+- **Multiple deployment workflows** for different environments
 - **Pre-configured API key** injected during build process
 - **Parallel operation** with the local development version
 
@@ -72,61 +72,73 @@ The workflow will:
 - Create a deployment summary
 - Add a commit comment
 
-#### Unpublishing (Automated Daily)
+#### Additional Workflows
 
-The site automatically unpublishes daily at 07:00 UTC via the **Unpublish from Cloudflare Pages** workflow.
+The project includes additional deployment workflows:
 
-You can also manually unpublish:
+- **Deploy Redirect Site** (`deploy-redirect.yml`) - Automated daily deployment at 07:00 UTC
+- **Deploy Testing** (`deploy-testing.yml`) - Testing deployment workflow
 
-1. Go to **Actions** tab in your GitHub repository
-2. Select **Unpublish from Cloudflare Pages** workflow  
-3. Click **Run workflow**
-4. Type "confirm" in the confirmation field
-5. Click **Run workflow**
+These can be triggered manually from the **Actions** tab in your GitHub repository.
 
 ## File Structure
 
-```
-├── public/                    # Production-ready files
-│   ├── index.html            # Production HTML (no API key input)
-│   ├── script.js             # Enhanced JS with production mode
-│   └── styles.css            # Styles with production enhancements
+```text
+├── public/                    # Source files for development and production
+│   ├── index.html            # Main HTML file
+│   ├── script.js             # JavaScript functionality
+│   └── styles.css            # CSS styles
+├── dist/                     # Build output directory (generated)
+│   ├── index.html            # Processed HTML with env vars injected
+│   ├── script.js             # Copied JavaScript
+│   └── styles.css            # Copied CSS
 ├── .github/workflows/
-│   ├── deploy.yml            # Publishing workflow
-│   └── unpublish.yml         # Unpublishing workflow
+│   ├── deploy.yml            # Main deployment workflow
+│   ├── deploy-redirect.yml   # Redirect site deployment
+│   └── deploy-testing.yml    # Testing deployment workflow
 ├── build.sh                  # Build script for production
 ├── _headers                  # Cloudflare Pages configuration
-├── logprobs.html             # Local development version
-├── script.js                 # Local development script
-├── styles.css                # Local development styles
-└── server.js                 # Local development server
+├── server.js                 # Local development server
+├── package.json              # Node.js dependencies and scripts
+├── .env.local                # Local environment variables (not tracked)
+├── DEVELOPMENT.md            # Development guide
+├── PRODUCTION.md             # This file
+└── README.md                 # Project documentation
 ```
 
 ## Production vs Local Differences
 
 ### Local Development
-- Requires manual API key input
-- Runs on Express server
-- Uses `logprobs.html`
-- Full server setup with port detection
+
+- Requires manual API key input via the web interface
+- Runs on Express server (`server.js`)
+- Uses files directly from `public/` directory
+- Full server setup with automatic port detection
+- Environment variables loaded from `.env.local`
 
 ### Production Deployment
-- API key pre-configured from environment
+
+- API key pre-configured from environment variables during build
 - Static files served by Cloudflare Pages
-- Uses `public/index.html`
-- No server required
+- Uses processed files from `dist/` directory
+- No server required - purely static hosting
+- Environment variables injected at build time via GitHub Actions
 
 ## Monitoring and Maintenance
 
 ### Deployment Status
+
 - Check the **Actions** tab for workflow runs
 - Review deployment summaries in workflow outputs
 - Monitor Cloudflare Pages dashboard for site status
 
-### Daily Unpublishing
-- Automatic unpublishing creates a GitHub issue notification
-- Check **Issues** tab for unpublish notifications
-- Review unpublish summaries in workflow outputs
+### Workflow Management
+
+- **Deploy to Cloudflare Pages** - Main deployment workflow
+- **Deploy Redirect Site** - Automated daily redirect deployment
+- **Deploy Testing** - Testing deployment workflow
+
+All workflows can be triggered manually from the GitHub Actions tab.
 
 ### Security Considerations
 - API key is injected at build time and not exposed in source code

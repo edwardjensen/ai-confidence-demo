@@ -7,6 +7,12 @@ set -e
 
 echo "🔧 Building AI Confidence Demo for production..."
 
+# Load environment variables from .env.local if it exists
+if [ -f ".env.local" ]; then
+    echo "📋 Loading environment variables from .env.local..."
+    export $(grep -v '^#' .env.local | xargs)
+fi
+
 # Create build directory
 mkdir -p dist
 
@@ -22,9 +28,11 @@ if [ -z "$OPENROUTER_API_KEY" ]; then
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS - replace with a clear development placeholder
         sed -i '' "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/index.html
+        sed -i '' "s/%IS_PRODUCTION%/false/g" dist/index.html
     else
         # Linux
         sed -i "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/index.html
+        sed -i "s/%IS_PRODUCTION%/false/g" dist/index.html
     fi
 else
     echo "🔑 Injecting API key into build..."
@@ -33,9 +41,11 @@ else
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
         sed -i '' "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
+        sed -i '' "s/%IS_PRODUCTION%/true/g" dist/index.html
     else
         # Linux
         sed -i "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
+        sed -i "s/%IS_PRODUCTION%/true/g" dist/index.html
     fi
 fi
 

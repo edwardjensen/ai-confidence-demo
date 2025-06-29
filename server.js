@@ -3,13 +3,12 @@ require('dotenv').config({ path: '.env.local' });
 
 const express = require('express');
 const path = require('path');
-const open = require('open');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from dist directory (built files)
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // CORS headers for local development
 app.use((req, res, next) => {
@@ -40,9 +39,9 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// Serve the main page at root (will automatically serve public/index.html)
+// Serve the main page at root (will automatically serve dist/index.html)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Handle 404s
@@ -65,7 +64,15 @@ function startServer(port) {
         console.log('-'.repeat(50));
         
         // Open browser automatically
-        open(`http://localhost:${port}`);
+        (async () => {
+            try {
+                const open = await import('open');
+                await open.default(`http://localhost:${port}`);
+            } catch (error) {
+                console.log('⚠️  Could not open browser automatically:', error.message);
+                console.log('🌐 Please manually open: http://localhost:' + port);
+            }
+        })();
     });
 
     server.on('error', (err) => {
