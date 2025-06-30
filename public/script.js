@@ -249,6 +249,18 @@ async function sendMessage() {
     
     if (!message) return;
     
+    // Hide disclaimer when first message is sent
+    const disclaimer = document.getElementById('disclaimerText');
+    if (disclaimer && !disclaimer.classList.contains('hidden')) {
+        disclaimer.classList.add('hidden');
+        // Remove from DOM after animation completes
+        setTimeout(() => {
+            if (disclaimer.parentNode) {
+                disclaimer.parentNode.removeChild(disclaimer);
+            }
+        }, 300);
+    }
+    
     // Add user message
     addMessage(message, true);
     

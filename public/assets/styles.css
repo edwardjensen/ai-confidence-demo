@@ -169,6 +169,30 @@ div.main-layout div.sidebar div.sidebar-bottom {
     color: white;
 }
 
+/* Disclaimer message styling */
+.disclaimer-message {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #fef7e0;
+    border: 1px solid #f9cc33;
+    border-radius: 0.75rem;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.disclaimer-message.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+
+.disclaimer-content p {
+    margin: 0;
+    color: #8b5a00;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
 .input-area {
     padding: 1rem;
     border-top: 1px solid #e5e5e7;

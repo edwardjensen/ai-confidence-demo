@@ -67,7 +67,13 @@
             </section>
        
             <section class="chat-container" id="chatContainer" aria-label="Chat Messages and Input">
-                <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Chat messages"></div>
+                <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Chat messages">
+                    <div id="disclaimerText" class="disclaimer-message" role="note" aria-label="Disclaimer about AI limitations">
+                        <div class="disclaimer-content">
+                            <p>AI models can produce errors, inappropriate content, or offensive material without warning. Risk increases significantly at higher creativity settings. This educational tool demonstrates AI limitations - users are responsible for evaluating all outputs.</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="input-area">
                     <div class="input-container">
                         <label for="messageInput" class="visually-hidden">Enter your message to the AI</label>
