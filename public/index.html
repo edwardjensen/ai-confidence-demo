@@ -139,6 +139,7 @@
                 
                 <div class="footer-placeholder">
                     <p>Copyright &copy; 2025 Edward Jensen. See on GitHub: <a href="https://github.com/edwardjensen/ai-confidence-demo" target="_blank">edwardjensen/ai-confidence-demo</a>.</p>
+                    <p><a href="#" onclick="openPrivacyModal()">Privacy Policy</a></p>
                     <div class="build-info">
                         <p class="build-link">
                             <a href="%BUILD_URL%" target="_blank" title="View build details">
@@ -147,6 +148,92 @@
                         </p>
                         <p class="commit-info">Commit: <code>%BUILD_COMMIT%</code></p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="privacy-modal" style="display: none;">
+        <div class="privacy-modal-content">
+            <div class="privacy-modal-header">
+                <h2>Privacy Policy</h2>
+                <span class="privacy-modal-close" onclick="closePrivacyModal()">&times;</span>
+            </div>
+            <div class="privacy-modal-body">
+                <h3>Introduction</h3>
+                <p>This Privacy Policy outlines how we collect, use, and protect information when you use the AI Confidence Probabilities Demonstration tool. We are committed to safeguarding your privacy and ensuring compliance with applicable data protection laws. The only data collection services used on this website are Cloudflare and Plausible Analytics, both of which prioritize privacy and minimize data collection.</p>
+
+                <h3>Data Collection</h3>
+
+                <h4>Cloudflare</h4>
+                <p>We use Cloudflare to enhance the security and performance of our website. As part of its services, Cloudflare may process limited technical data, such as:</p>
+                <ul>
+                    <li>IP addresses</li>
+                    <li>HTTP request headers</li>
+                    <li>Network metadata (e.g., protocol information like TCP/UDP)</li>
+                </ul>
+                <p>This data is collected to:</p>
+                <ul>
+                    <li>Mitigate Distributed Denial of Service (DDoS) attacks</li>
+                    <li>Provide traffic visibility</li>
+                    <li>Ensure secure and efficient content delivery</li>
+                </ul>
+                <p>Cloudflare does not use cookies or track users across websites. It processes this data on our behalf in compliance with GDPR and other applicable laws. For more details, please refer to <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Cloudflare's privacy practices</a>.</p>
+
+                <h4>Plausible Analytics</h4>
+                <p>We use Plausible Analytics to understand website traffic trends without compromising visitor privacy. Plausible operates without cookies and does not collect personal or identifiable information. The data collected is entirely anonymous and includes:</p>
+                <ul>
+                    <li>Aggregated page views</li>
+                    <li>Referring websites</li>
+                    <li>Browser types</li>
+                    <li>Device types</li>
+                </ul>
+                <p>Plausible ensures compliance with GDPR, CCPA, and other privacy regulations by adhering to principles of data minimization and pseudonymization.</p>
+
+                <h4>AI Model Interactions</h4>
+                <div class="privacy-important-notice">
+                    <p><strong>Important Notice:</strong> This application facilitates interactions with AI models through the OpenRouter service. We want to be completely transparent about how your AI interactions are handled:</p>
+                    <ul>
+                        <li><strong>No logging by us:</strong> Neither your submissions to the AI model nor the AI's responses are logged, stored, or retained by us for any purpose whatsoever.</li>
+                        <li><strong>Direct communication:</strong> Your messages are sent directly to the AI model through OpenRouter's API without any intermediate storage or processing on our servers.</li>
+                        <li><strong>Third-party processing:</strong> While we do not log your AI interactions, please note that OpenRouter and the underlying AI model providers may have their own data handling practices. We recommend reviewing <a href="https://openrouter.ai/privacy" target="_blank">OpenRouter's privacy policy</a> for information about their data handling.</li>
+                        <li><strong>Local processing only:</strong> Any processing of AI responses (such as confidence highlighting) occurs entirely in your browser and is not transmitted back to our servers.</li>
+                    </ul>
+                </div>
+
+                <h3>How We Use Data</h3>
+                <p>The limited data collected via Cloudflare and Plausible Analytics is used solely for the following purposes:</p>
+                <ul>
+                    <li>Enhancing website security and performance</li>
+                    <li>Analyzing aggregate website traffic trends to improve user experience</li>
+                </ul>
+                <p>We do not sell, share, or use your data for advertising or tracking purposes. We do not have access to, store, or analyze any of your AI conversations or interactions.</p>
+
+                <h3>Your Privacy Rights</h3>
+                <p>As a visitor, you have the following rights:</p>
+                <ul>
+                    <li>To access information about how your data is processed</li>
+                    <li>To request the deletion of any personal data if applicable (note: no personal data is collected by this website)</li>
+                    <li>To object to any form of processing that may infringe on your rights (though all processing here complies with privacy laws)</li>
+                </ul>
+
+                <h3>Third Parties</h3>
+                <p>Both Cloudflare and Plausible Analytics act as third-party processors for this website. They are committed to maintaining high standards of privacy protection:</p>
+                <ul>
+                    <li>Cloudflare adheres to GDPR and international data transfer frameworks (e.g., EU-U.S. Data Privacy Framework)</li>
+                    <li>Plausible Analytics operates within the European Union under strict privacy regulations</li>
+                </ul>
+                <p>Additionally, this application uses OpenRouter to facilitate AI model interactions. OpenRouter acts as an intermediary service, and their own privacy practices apply to the processing of your AI interactions.</p>
+
+                <h3>Security</h3>
+                <p>We implement strict technical measures to protect all data processed through our website. Both Cloudflare and Plausible utilize encryption and other security protocols to safeguard your information. All AI interactions are conducted over secure HTTPS connections.</p>
+
+                <h3>Updates to This Policy</h3>
+                <p>We may update this Privacy Policy from time to time to reflect changes in technology or legal requirements. Any updates will be posted on this page with a revised effective date.</p>
+
+                <div class="privacy-modal-footer">
+                    <p><strong>Last updated:</strong> 29 June 2025</p>
                 </div>
             </div>
         </div>

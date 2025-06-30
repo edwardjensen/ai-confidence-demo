@@ -517,3 +517,40 @@ function showLocalDevMode() {
         productionNotice.parentElement.style.borderColor = '#ffeaa7';
     }
 }
+
+// Privacy Modal Functions
+function openPrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) {
+        modal.style.display = 'block';
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closePrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) {
+        modal.style.display = 'none';
+        // Restore body scroll
+        document.body.style.overflow = 'hidden'; // Keep as hidden since main app has overflow hidden
+    }
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('privacyModal');
+    if (event.target === modal) {
+        closePrivacyModal();
+    }
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('privacyModal');
+        if (modal && modal.style.display === 'block') {
+            closePrivacyModal();
+        }
+    }
+});
