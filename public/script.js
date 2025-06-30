@@ -379,6 +379,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the app after DOM is loaded
     initializeApp();
     
+    // Initialize accessibility features
+    initializeAccessibility();
+    
     // Initialize temperature slider
     const temperatureSlider = document.getElementById('temperatureSlider');
     const temperatureValue = document.getElementById('temperatureValue');
@@ -518,39 +521,239 @@ function showLocalDevMode() {
     }
 }
 
-// Privacy Modal Functions
+// ==============================================
+// ACCESSIBILITY FUNCTIONS
+// ==============================================
+
+// Focus management for modals
+function trapFocus(element) {
+    const focusableElements = element.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstFocusableElement = focusableElements[0];
+    const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+    element.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            if (e.shiftKey) {
+                if (document.activeElement === firstFocusableElement) {
+                    lastFocusableElement.focus();
+                    e.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastFocusableElement) {
+                    firstFocusableElement.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+        if (e.key === 'Escape') {
+            closePrivacyModal();
+        }
+    });
+}
+
+// Announce to screen readers
+function announceToScreenReader(message) {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'visually-hidden';
+    announcement.textContent = message;
+    
+    document.body.appendChild(announcement);
+    
+    setTimeout(() => {
+        document.body.removeChild(announcement);
+    }, 1000);
+}
+
+// Enhanced privacy modal functions
 function openPrivacyModal() {
     const modal = document.getElementById('privacyModal');
-    if (modal) {
-        modal.style.display = 'block';
-        // Prevent body scroll when modal is open
-        document.body.style.overflow = 'hidden';
-    }
+    const previouslyFocused = document.activeElement;
+    
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+    
+    // Focus the modal content
+    const modalContent = modal.querySelector('.privacy-modal-body');
+    modalContent.focus();
+    
+    // Trap focus within modal
+    trapFocus(modal);
+    
+    // Store previously focused element for restoration
+    modal.dataset.previouslyFocused = previouslyFocused.id || 'body';
+    
+    // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
+    
+    announceToScreenReader('Privacy policy dialog opened');
 }
 
 function closePrivacyModal() {
     const modal = document.getElementById('privacyModal');
-    if (modal) {
-        modal.style.display = 'none';
-        // Restore body scroll
-        document.body.style.overflow = 'hidden'; // Keep as hidden since main app has overflow hidden
+    const previouslyFocusedId = modal.dataset.previouslyFocused;
+    
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    
+    // Restore focus
+    const elementToFocus = previouslyFocusedId !== 'body' 
+        ? document.getElementById(previouslyFocusedId)
+        : document.querySelector('[onclick*="openPrivacyModal"]');
+    
+    if (elementToFocus) {
+        elementToFocus.focus();
+    }
+    
+    // Restore background scrolling
+    document.body.style.overflow = '';
+    
+    announceToScreenReader('Privacy policy dialog closed');
+}
+
+// Enhanced temperature slider
+function updateTemperatureValue(value) {
+    const displayValue = (value / 10).toFixed(1);
+    temperature = parseFloat(displayValue);
+    
+    const valueSpan = document.getElementById('temperatureValue');
+    const slider = document.getElementById('temperatureSlider');
+    
+    valueSpan.textContent = displayValue;
+    slider.setAttribute('aria-valuenow', displayValue);
+    slider.setAttribute('aria-valuetext', `${displayValue} - ${getTemperatureDescription(displayValue)}`);
+    
+    announceToScreenReader(`Temperature set to ${displayValue}`);
+}
+
+function getTemperatureDescription(value) {
+    if (value <= 0.3) return 'Very stable';
+    if (value <= 0.7) return 'Balanced';
+    if (value <= 1.2) return 'Creative';
+    return 'Very creative';
+}
+
+// Enhanced toggle for output mode
+function updateOutputModeToggle() {
+    const toggle = document.getElementById('outputModeToggle');
+    const isChecked = toggle.checked;
+    
+    outputMode = isChecked ? 'confidence' : 'markdown';
+    
+    announceToScreenReader(
+        `Confidence percentages ${isChecked ? 'enabled' : 'disabled'}`
+    );
+}
+
+// Enhanced message input handling
+function handleMessageInput(event) {
+    const textarea = event.target;
+    
+    // Auto-resize functionality
+    textarea.style.height = 'auto';
+    textarea.style.height = (textarea.scrollHeight) + 'px';
+    
+    // Handle Enter key for accessibility
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
     }
 }
 
-// Close modal when clicking outside of it
-window.onclick = function(event) {
-    const modal = document.getElementById('privacyModal');
-    if (event.target === modal) {
-        closePrivacyModal();
+// Enhanced send message function wrapper
+function enhancedSendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    
+    if (!messageInput.value.trim()) {
+        announceToScreenReader('Please enter a message before sending');
+        messageInput.focus();
+        return;
     }
+    
+    // Disable send button during processing
+    sendButton.disabled = true;
+    sendButton.setAttribute('aria-label', 'Sending message...');
+    
+    announceToScreenReader('Message sent, waiting for response');
+    
+    // Call the original sendMessage function
+    sendMessage();
+    
+    // Re-enable button after a short delay (will be overridden by actual response handling)
+    setTimeout(() => {
+        sendButton.disabled = false;
+        sendButton.setAttribute('aria-label', 'Send message');
+    }, 1000);
 }
 
-// Close modal with Escape key
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        const modal = document.getElementById('privacyModal');
-        if (modal && modal.style.display === 'block') {
-            closePrivacyModal();
+// Initialize accessibility features
+function initializeAccessibility() {
+    // Temperature slider
+    const tempSlider = document.getElementById('temperatureSlider');
+    if (tempSlider) {
+        tempSlider.addEventListener('input', (e) => updateTemperatureValue(e.target.value));
+        tempSlider.addEventListener('change', (e) => updateTemperatureValue(e.target.value));
+        // Initialize with current value
+        updateTemperatureValue(tempSlider.value);
+    }
+    
+    // Output mode toggle
+    const outputToggle = document.getElementById('outputModeToggle');
+    if (outputToggle) {
+        outputToggle.addEventListener('change', updateOutputModeToggle);
+    }
+    
+    // Message input
+    const messageInput = document.getElementById('messageInput');
+    if (messageInput) {
+        messageInput.addEventListener('keydown', handleMessageInput);
+        messageInput.addEventListener('input', handleMessageInput);
+    }
+    
+    // Send button enhancement
+    const sendButton = document.getElementById('sendButton');
+    if (sendButton) {
+        sendButton.addEventListener('click', enhancedSendMessage);
+    }
+    
+    // API Key submit button
+    const apiKeySubmit = document.getElementById('apiKeySubmit');
+    if (apiKeySubmit) {
+        apiKeySubmit.addEventListener('click', setApiKey);
+    }
+    
+    // Privacy policy link
+    const privacyPolicyLink = document.getElementById('privacyPolicyLink');
+    if (privacyPolicyLink) {
+        privacyPolicyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPrivacyModal();
+        });
+    }
+    
+    // Privacy modal close button
+    const modalCloseButton = document.querySelector('.privacy-modal-close');
+    if (modalCloseButton) {
+        modalCloseButton.addEventListener('click', closePrivacyModal);
+    }
+    
+    // Privacy modal keyboard handling
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('privacyModal');
+            if (modal && modal.style.display !== 'none') {
+                closePrivacyModal();
+            }
         }
-    }
-});
+    });
+    
+    announceToScreenReader('AI Confidence Demonstration loaded and ready');
+}
+
+// ==============================================
+// END ACCESSIBILITY FUNCTIONS
+// ==============================================
