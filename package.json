@@ -6,10 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "serve": "node server.js",
     "build": "./build.sh",
-    "build:local": "./build.sh",
-    "preview": "cd dist && python3 -m http.server 8080"
+    "serve": "./build.sh && node server.js",
+    "preview": "node server.js"
   },
   "keywords": [
     "ai",
