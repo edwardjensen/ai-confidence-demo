@@ -51,7 +51,7 @@ div.main-layout div.sidebar div.sidebar-bottom {
 
 .chat-section {
     flex: 2 !important;
-    background: blue; /* Temporary debug color */
+    background: #f7f7f8; /* Restored original background */
     display: flex !important;
     flex-direction: column !important;
     min-width: 0 !important;
@@ -59,7 +59,7 @@ div.main-layout div.sidebar div.sidebar-bottom {
 
 .sidebar {
     flex: 1 !important;
-    background: green !important; /* Temporary debug color */
+    background: white !important; /* Restored original background */
     border-left: 1px solid #e5e5e7 !important;
     display: flex !important;
     flex-direction: column !important;
@@ -458,29 +458,23 @@ div.main-layout div.sidebar div.sidebar-bottom {
 /* Temperature Control Styles */
 .temperature-control {
     padding: 1.5rem;
-    background: #f8f9fa;
+    background: white;
     border-bottom: 1px solid #e5e5e7;
 }
 
 .temperature-label {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     font-size: 0.9rem;
     color: #333;
     font-weight: 500;
 }
 
-.temperature-label span:first-child {
-    margin-right: 0.25rem;
-}
-
 #temperatureValue {
-    font-weight: 600;
     color: #007aff;
-    min-width: 2rem;
-    text-align: center;
+    font-weight: 600;
 }
 
 .temperature-slider {
@@ -551,9 +545,10 @@ div.main-layout div.sidebar div.sidebar-bottom {
     display: flex;
     justify-content: space-between;
     font-size: 0.8rem;
-    color: #666;
+    color: #333;
     margin-top: 0.25rem;
     position: relative;
+    font-weight: 500;
 }
 
 .detent-label {
@@ -609,8 +604,8 @@ div.main-layout div.sidebar div.sidebar-bottom {
 
 /* Output Mode Toggle Styles */
 .output-mode-control {
-    padding: 1rem;
-    background: #f8f9fa;
+    padding: 1.5rem;
+    background: white;
     border-bottom: 1px solid #e5e5e7;
 }
 
@@ -1038,3 +1033,156 @@ div.main-layout div.sidebar div.sidebar-bottom {
         font-size: 0.8rem;
     }
 }
+
+/* ==============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================== */
+
+/* Skip link for keyboard navigation */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1000;
+    border-radius: 0 0 4px 4px;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Visually hidden class for screen reader only content */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Enhanced focus styles for better keyboard navigation */
+button:focus,
+input:focus,
+textarea:focus,
+a:focus,
+[tabindex]:focus {
+    outline: 2px solid #4A9EFF !important;
+    outline-offset: 2px !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .confidence-high {
+        background-color: #000 !important;
+        color: #fff !important;
+        border: 2px solid #fff !important;
+    }
+    
+    .confidence-medium {
+        background-color: #666 !important;
+        color: #fff !important;
+        border: 2px solid #fff !important;
+    }
+    
+    .confidence-low {
+        background-color: #fff !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Better modal accessibility */
+.privacy-modal[aria-modal="true"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    z-index: 1000 !important;
+}
+
+/* Legend improvements */
+.legend-description {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.legend ul.legend-items {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.legend li.legend-item {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Better form labeling */
+.api-key-input-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+/* Ensure proper heading hierarchy styling */
+h1 { font-size: 1.5rem; line-height: 1.2; }
+h2 { font-size: 1.3rem; line-height: 1.2; }
+h3 { font-size: 1.1rem; line-height: 1.2; }
+h4 { font-size: 1rem; line-height: 1.2; }
+h5 { font-size: 0.9rem; line-height: 1.2; }
+
+/* Color contrast improvements */
+.privacy-important-notice {
+    border-left: 4px solid #ff6b35;
+    padding-left: 1rem;
+    background-color: rgba(255, 107, 53, 0.1);
+    margin: 1rem 0;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Improved button accessibility */
+button[aria-label] {
+    position: relative;
+}
+
+.privacy-modal-close {
+    background: none !important;
+    border: none !important;
+    font-size: 1.5rem !important;
+    cursor: pointer !important;
+    padding: 0.5rem !important;
+    border-radius: 4px !important;
+}
+
+.privacy-modal-close:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ==============================================
+   END ACCESSIBILITY IMPROVEMENTS
+   ============================================== */
