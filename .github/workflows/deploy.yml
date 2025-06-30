@@ -51,7 +51,7 @@ jobs:
 
       - name: 🏗️ Build application
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY_V2 }}
         run: |
           chmod +x build.sh
           ./build.sh
