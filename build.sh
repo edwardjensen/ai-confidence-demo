@@ -19,7 +19,14 @@ mkdir -p dist
 # Copy all files from public to dist
 cp -r public/* dist/
 
-# Replace API key placeholder in index.html
+# Copy gpt-tokenizer library files to dist for bundling
+echo "📦 Bundling gpt-tokenizer library files..."
+mkdir -p dist/assets/gpt-tokenizer
+cp -r node_modules/gpt-tokenizer/esm/* dist/assets/gpt-tokenizer/
+mkdir -p dist/assets/gpt-tokenizer/data
+cp -r node_modules/gpt-tokenizer/data/* dist/assets/gpt-tokenizer/data/
+
+# Replace API key placeholder in confidence.html
 if [ -z "$OPENROUTER_API_KEY" ]; then
     echo "⚠️  OPENROUTER_API_KEY environment variable is not set"
     echo "🔧 Building for local development (API key input will be required)"
@@ -27,12 +34,12 @@ if [ -z "$OPENROUTER_API_KEY" ]; then
     # For local development, keep the placeholder so the app will show API key input
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS - replace with a clear development placeholder
-        sed -i '' "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/index.html
-        sed -i '' "s/%IS_PRODUCTION%/false/g" dist/index.html
+        sed -i '' "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/confidence.html
+        sed -i '' "s/%IS_PRODUCTION%/false/g" dist/confidence.html
     else
         # Linux
-        sed -i "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/index.html
-        sed -i "s/%IS_PRODUCTION%/false/g" dist/index.html
+        sed -i "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/confidence.html
+        sed -i "s/%IS_PRODUCTION%/false/g" dist/confidence.html
     fi
 else
     echo "🔑 Injecting API key into build..."
@@ -40,12 +47,12 @@ else
     # Replace the placeholder with the actual API key
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
-        sed -i '' "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
-        sed -i '' "s/%IS_PRODUCTION%/true/g" dist/index.html
+        sed -i '' "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/confidence.html
+        sed -i '' "s/%IS_PRODUCTION%/true/g" dist/confidence.html
     else
         # Linux
-        sed -i "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/index.html
-        sed -i "s/%IS_PRODUCTION%/true/g" dist/index.html
+        sed -i "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/confidence.html
+        sed -i "s/%IS_PRODUCTION%/true/g" dist/confidence.html
     fi
 fi
 
@@ -66,18 +73,18 @@ if [ -f "build-data/buildinfo.yml" ]; then
     # Replace build info placeholders
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
-        sed -i '' "s|%BUILD_COMMIT%|${COMMIT}|g" dist/index.html
-        sed -i '' "s|%BUILD_ID%|${BUILD_ID}|g" dist/index.html
-        sed -i '' "s|%BUILD_URL%|${BUILD_URL}|g" dist/index.html
-        sed -i '' "s|%BUILD_TIMESTAMP%|${TIMESTAMP_DISPLAY}|g" dist/index.html
-        sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/index.html
+        sed -i '' "s|%BUILD_COMMIT%|${COMMIT}|g" dist/confidence.html
+        sed -i '' "s|%BUILD_ID%|${BUILD_ID}|g" dist/confidence.html
+        sed -i '' "s|%BUILD_URL%|${BUILD_URL}|g" dist/confidence.html
+        sed -i '' "s|%BUILD_TIMESTAMP%|${TIMESTAMP_DISPLAY}|g" dist/confidence.html
+        sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/confidence.html
     else
         # Linux
-        sed -i "s|%BUILD_COMMIT%|${COMMIT}|g" dist/index.html
-        sed -i "s|%BUILD_ID%|${BUILD_ID}|g" dist/index.html
-        sed -i "s|%BUILD_URL%|${BUILD_URL}|g" dist/index.html
-        sed -i "s|%BUILD_TIMESTAMP%|${TIMESTAMP_DISPLAY}|g" dist/index.html
-        sed -i "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/index.html
+        sed -i "s|%BUILD_COMMIT%|${COMMIT}|g" dist/confidence.html
+        sed -i "s|%BUILD_ID%|${BUILD_ID}|g" dist/confidence.html
+        sed -i "s|%BUILD_URL%|${BUILD_URL}|g" dist/confidence.html
+        sed -i "s|%BUILD_TIMESTAMP%|${TIMESTAMP_DISPLAY}|g" dist/confidence.html
+        sed -i "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/confidence.html
     fi
 else
     echo "⚠️  No build info found, running in local development mode..."
@@ -87,18 +94,18 @@ else
     
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
-        sed -i '' "s|%BUILD_COMMIT%|Development|g" dist/index.html
-        sed -i '' "s|%BUILD_ID%|Local Dev|g" dist/index.html
-        sed -i '' "s|%BUILD_URL%|#|g" dist/index.html
-        sed -i '' "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/index.html
-        sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/index.html
+        sed -i '' "s|%BUILD_COMMIT%|Development|g" dist/confidence.html
+        sed -i '' "s|%BUILD_ID%|Local Dev|g" dist/confidence.html
+        sed -i '' "s|%BUILD_URL%|#|g" dist/confidence.html
+        sed -i '' "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/confidence.html
+        sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/confidence.html
     else
         # Linux
-        sed -i "s|%BUILD_COMMIT%|Development|g" dist/index.html
-        sed -i "s|%BUILD_ID%|Local Dev|g" dist/index.html
-        sed -i "s|%BUILD_URL%|#|g" dist/index.html
-        sed -i "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/index.html
-        sed -i "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/index.html
+        sed -i "s|%BUILD_COMMIT%|Development|g" dist/confidence.html
+        sed -i "s|%BUILD_ID%|Local Dev|g" dist/confidence.html
+        sed -i "s|%BUILD_URL%|#|g" dist/confidence.html
+        sed -i "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/confidence.html
+        sed -i "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/confidence.html
     fi
 fi
 

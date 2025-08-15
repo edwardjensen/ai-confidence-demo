@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 8000;
 // Serve static files from dist directory (built files)
 app.use(express.static(path.join(__dirname, 'dist')));
 
+// Serve node_modules for client-side libraries
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+
 // CORS headers for local development
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -39,9 +42,24 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// Serve the main page at root (will automatically serve dist/index.html)
+// Serve the main landing page at root
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// Serve the confidence visualization demo
+app.get('/confidence', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'confidence.html'));
+});
+
+// Serve the tokenization demo
+app.get('/tokenization', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'tokenization.html'));
+});
+
+// Serve the privacy policy page
+app.get('/privacy', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'privacy.html'));
 });
 
 // Handle 404s

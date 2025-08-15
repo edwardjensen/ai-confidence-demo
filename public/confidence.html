@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Confidence Probabilities Demonstration</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Interactive demonstration of AI confidence levels through visual token highlighting and probability analysis.">
+    <meta name="keywords" content="AI, confidence, machine learning, token probability, demonstration, OpenRouter">
+    
+    <!-- Open Graph Meta Tags (Facebook, LinkedIn, etc.) -->
+    <meta property="og:title" content="AI Confidence Probabilities Demonstration">
+    <meta property="og:description" content="Interactive demonstration of AI confidence levels through visual token highlighting and probability analysis.">
+    <meta property="og:image" content="assets/confprobs-seo.webp">
+    <meta property="og:image:alt" content="Mathematical equations written in white chalk on a dark reddish-brown chalkboard with the text \"AI Confidence Probabilities\" overlaid in large white sans-serif font at the bottom. The chalk writing includes various mathematical formulas and symbols including \"dt\", \"∂/∂t\", \"g(M-N₀)(1-εS)S\", \"Tn\", \"Tp\", \"ds/dt = Tb g(M-N₀)(1-εS)S + M-N S/Tn Tp\", \"Ft₀x₀\", \"Pt = Tn\", \"TSε\", and other partially visible mathematical notation and equations.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AI Confidence Probabilities Demonstration">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Confidence Probabilities Demonstration">
+    <meta name="twitter:description" content="Interactive demonstration of AI confidence levels through visual token highlighting and probability analysis.">
+    <meta name="twitter:image" content="assets/confprobs-seo.webp">
+    <meta name="twitter:image:alt" content="Mathematical equations written in white chalk on a dark reddish-brown chalkboard with the text \"AI Confidence Probabilities\" overlaid in large white sans-serif font at the bottom. The chalk writing includes various mathematical formulas and symbols including \"dt\", \"∂/∂t\", \"g(M-N₀)(1-εS)S\", \"Tn\", \"Tp\", \"ds/dt = Tb g(M-N₀)(1-εS)S + M-N S/Tn Tp\", \"Ft₀x₀\", \"Pt = Tn\", \"TSε\", and other partially visible mathematical notation and equations.">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a1a">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="assets/confidencesiteicon.webp">
+    <link rel="icon" type="image/jpeg" href="assets/confidencesiteicon.jpg">
+    <link rel="apple-touch-icon" href="assets/confidencesiteicon.jpg">
+    
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <!-- Skip to main content link for screen readers -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="main-layout">
+        <main id="main-content" class="chat-section" role="main" aria-label="AI Chat Interface">
+            <!-- API Key Input Container (for local development) -->
+            <section id="apiKeyContainer" class="api-key-container" style="display: none;" role="dialog" aria-labelledby="devModeTitle" aria-describedby="devModeDesc">
+                <div class="api-key-content">
+                    <h2 id="devModeTitle">🔧 Development Mode</h2>
+                    <p id="devModeDesc">Please enter your OpenRouter API key to continue:</p>
+                    <div class="api-key-input-group">
+                        <label for="apiKeyInput" class="visually-hidden">OpenRouter API Key</label>
+                        <input 
+                            type="password" 
+                            id="apiKeyInput" 
+                            placeholder="Enter your OpenRouter API key..."
+                            class="api-key-input"
+                            aria-describedby="apiKeyNote"
+                            aria-required="true"
+                        >
+                        <button id="apiKeySubmit" class="api-key-submit" aria-describedby="apiKeyNote">
+                            Connect
+                        </button>
+                    </div>
+                    <p id="apiKeyNote" class="api-key-note">
+                        Get your API key from <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">OpenRouter<span class="visually-hidden"> (opens in new tab)</span></a>
+                    </p>
+                </div>
+            </section>
+       
+            <section class="chat-container" id="chatContainer" aria-label="Chat Messages and Input">
+                <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Chat messages">
+                    <div id="disclaimerText" class="disclaimer-message" role="note" aria-label="Disclaimer about AI limitations">
+                        <div class="disclaimer-content">
+                            <p>AI models can produce errors, inappropriate content, or offensive material without warning. Risk increases significantly at higher creativity settings. This educational tool demonstrates AI limitations - users are responsible for evaluating all outputs.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <div class="input-container">
+                        <label for="messageInput" class="visually-hidden">Enter your message to the AI</label>
+                        <textarea 
+                            id="messageInput" 
+                            class="input-field" 
+                            placeholder="Type your message here..."
+                            rows="1"
+                            aria-describedby="inputHelp"
+                            aria-label="Message input"
+                        ></textarea>
+                        <span id="inputHelp" class="visually-hidden">Press Enter to send message, Shift+Enter for new line</span>
+                        <button class="send-button" id="sendButton" aria-label="Send message" type="button">
+                            <span aria-hidden="true">➤</span>
+                            <span class="visually-hidden">Send</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <aside class="sidebar" role="complementary" aria-label="Controls and Information">
+            <div class="sidebar-content">
+                <header class="header">
+                    <h1>AI Demonstration Tool</h1>
+                </header>
+
+                <section class="legend" aria-labelledby="legendTitle">
+                    <h2 id="legendTitle" class="legend-title">Confidence Levels</h2>
+                    <p class="legend-description">Hover over colored tokens in messages for details</p>
+                    <ul class="legend-items" role="list">
+                        <li class="legend-item">
+                            <div class="legend-color confidence-high" aria-hidden="true"></div>
+                            <span>High Confidence (greater than 70%)</span>
+                        </li>
+                        <li class="legend-item">
+                            <div class="legend-color confidence-medium" aria-hidden="true"></div>
+                            <span>Medium Confidence (30% to 70%)</span>
+                        </li>
+                        <li class="legend-item">
+                            <div class="legend-color confidence-low" aria-hidden="true"></div>
+                            <span>Low Confidence (less than 30%)</span>
+                        </li>
+                    </ul>
+                </section>
+                
+                <div style="padding: 1.5rem; border-top: 1px solid #e5e5e7;">
+                    <h2 style="color: #1a1a1a; font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">AI Demos</h2>
+                    <div class="demos-links">
+                        <a href="/tokenization" class="demo-link">
+                            <strong>Tokenization Demo</strong>
+                            <span>How AI splits text into tokens</span>
+                        </a>
+                        <a href="/confidence" class="demo-link demo-link-active" aria-current="page">
+                            <strong>Confidence Visualization</strong>
+                            <span>See AI confidence levels</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-bottom">
+                <section class="temperature-control" aria-labelledby="tempTitle">
+                    <div class="temperature-label">
+                        <span>Temperature:</span>
+                        <span id="temperatureValue" aria-label="Temperature value">0.7</span>
+                    </div>
+                    <label for="temperatureSlider" class="visually-hidden">
+                        Adjust AI temperature from 0.0 (stable) to 2.0 (chaotic)
+                    </label>
+                    <input 
+                        type="range" 
+                        id="temperatureSlider" 
+                        class="temperature-slider"
+                        min="0" 
+                        max="20" 
+                        value="7" 
+                        step="1"
+                        aria-describedby="tempRangeDesc"
+                        aria-valuemin="0"
+                        aria-valuemax="2.0"
+                        aria-valuenow="0.7"
+                        aria-valuetext="0.7"
+                    >
+                    <div id="tempRangeDesc" class="temperature-range">
+                        <span>Stable</span>
+                        <span class="detent-label">Start Here</span>
+                        <span>Chaotic</span>
+                    </div>
+                </section>
+                
+                <section class="output-mode-control" aria-labelledby="outputModeTitle">
+                    <div class="output-mode-label">Show Confidence Percentages?</div>
+                    <div class="output-mode-toggle">
+                        <div class="toggle-container">
+                            <input 
+                                type="checkbox" 
+                                id="outputModeToggle" 
+                                class="toggle-checkbox"
+                                aria-describedby="outputModeDesc"
+                            >
+                            <label for="outputModeToggle" class="toggle-label">
+                                <span class="toggle-slider" aria-hidden="true"></span>
+                                <span class="toggle-text-left" aria-hidden="true">Yes</span>
+                                <span class="toggle-text-right" aria-hidden="true">No</span>
+                                <span class="visually-hidden">Toggle confidence percentage display</span>
+                            </label>
+                        </div>
+                        <div id="outputModeDesc" class="visually-hidden">
+                            When enabled, shows exact confidence percentages. When disabled, shows only color coding.
+                        </div>
+                    </div>
+                </section>
+                
+                <footer class="footer-placeholder" role="contentinfo">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; font-size: 0.875rem; color: #666; border-top: 1px solid #e5e5e7;">
+                        <span>Copyright &copy; 2025 <a href="https://github.com/edwardjensen/ai-confidence-demo" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">Edward Jensen</a></span>
+                        <a href="/privacy" style="color: #007aff; text-decoration: none;">Privacy Policy</a>
+                    </div>
+                </footer>
+            </div>
+        </aside>
+    </div>
+
+
+    <!-- Environment variables will be injected here by build process -->
+    <script id="config">
+        window.AI_DEMO_CONFIG = {
+            apiKey: '%API_KEY%',
+            isProduction: %IS_PRODUCTION%
+        };
+    </script>
+    <script src="script.js"></script>
+    <script src="assets/privacy-modal.js"></script>
+</body>
+</html>

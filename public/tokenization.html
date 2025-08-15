@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tokenization Demonstration</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Interactive demonstration of AI tokenization - see how AI models split text into tokens in real-time.">
+    <meta name="keywords" content="AI, tokenization, tokens, machine learning, demonstration, GPT, BPE">
+    
+    <!-- Open Graph Meta Tags (Facebook, LinkedIn, etc.) -->
+    <meta property="og:title" content="AI Tokenization Demonstration">
+    <meta property="og:description" content="Interactive demonstration of AI tokenization - see how AI models split text into tokens in real-time.">
+    <meta property="og:image" content="assets/confprobs-seo.webp">
+    <meta property="og:image:alt" content="Mathematical equations written in white chalk on a dark reddish-brown chalkboard with the text \"AI Tokenization\" overlaid in large white sans-serif font at the bottom.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AI Tokenization Demonstration">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Tokenization Demonstration">
+    <meta name="twitter:description" content="Interactive demonstration of AI tokenization - see how AI models split text into tokens in real-time.">
+    <meta name="twitter:image" content="assets/confprobs-seo.webp">
+    <meta name="twitter:image:alt" content="Mathematical equations written in white chalk on a dark reddish-brown chalkboard with the text \"AI Tokenization\" overlaid in large white sans-serif font at the bottom.">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a1a">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="assets/confidencesiteicon.webp">
+    <link rel="icon" type="image/jpeg" href="assets/confidencesiteicon.jpg">
+    <link rel="apple-touch-icon" href="assets/confidencesiteicon.jpg">
+    
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        /* Tokenization-specific styles */
+        .tokenization-demo {
+            max-width: 100%;
+        }
+        
+        .input-section {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-label {
+            display: block;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .input-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+            background: #fafafa;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+        
+        .input-textarea:focus {
+            outline: none;
+            border-color: #007aff;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+        
+        .output-section {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .output-label {
+            display: block;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .tokens-display {
+            min-height: 120px;
+            padding: 1rem;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            background: #fafafa;
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            overflow-wrap: break-word;
+        }
+        
+        .token {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 1px;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .token:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Token colors - using a variety of colors for visual distinction */
+        .token:nth-child(4n+1) { background-color: #e1f5fe; border: 1px solid #0288d1; }
+        .token:nth-child(4n+2) { background-color: #f3e5f5; border: 1px solid #8e24aa; }
+        .token:nth-child(4n+3) { background-color: #e8f5e8; border: 1px solid #43a047; }
+        .token:nth-child(4n+4) { background-color: #fff3e0; border: 1px solid #ff9800; }
+        
+        .token-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+        
+        .token-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1a1a1a;
+        }
+        
+        .token:hover .token-tooltip {
+            opacity: 1;
+        }
+        
+        .stats-section {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #007aff;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            display: block;
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .empty-state {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .explanation-section {
+            background: #f8f9fa;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .explanation-section h3 {
+            color: #1a1a1a;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .explanation-section p {
+            color: #4a4a4a;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        
+        .explanation-section p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Loading state */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            background: #ffebee;
+            border: 1px solid #f8bbd9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link for screen readers -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="main-layout">
+        <main id="main-content" class="chat-section" role="main" aria-label="AI Tokenization Demo">
+            <header class="header">
+                <h1>AI Tokenization Demo</h1>
+                <p class="header-subtitle">See how AI models split text into tokens in real-time</p>
+            </header>
+            
+            <div class="chat-container">
+                <div class="tokenization-demo">
+                    <!-- Input Section -->
+                    <div class="input-section">
+                        <label for="textInput" class="input-label">Enter your text:</label>
+                        <textarea 
+                            id="textInput" 
+                            class="input-textarea" 
+                            placeholder="Type or paste any text here to see how it gets tokenized by AI models..."
+                            aria-describedby="inputHelp"
+                        ></textarea>
+                        <div id="inputHelp" class="sr-only">As you type, the text will be automatically tokenized and displayed below</div>
+                    </div>
+                    
+                    <!-- Stats Section -->
+                    <div class="stats-section">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span id="tokenCount" class="stat-value">0</span>
+                                <span class="stat-label">Tokens</span>
+                            </div>
+                            <div class="stat-item">
+                                <span id="characterCount" class="stat-value">0</span>
+                                <span class="stat-label">Characters</span>
+                            </div>
+                            <div class="stat-item">
+                                <span id="wordCount" class="stat-value">0</span>
+                                <span class="stat-label">Words</span>
+            </div>
+                            <div class="stat-item">
+                                <span id="compressionRatio" class="stat-value">0.0</span>
+                                <span class="stat-label">Tokens/Characters</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tokenized Output Section -->
+                    <div class="output-section">
+                        <label class="output-label">Tokenized Text:</label>
+                        <div id="tokensDisplay" class="tokens-display" role="region" aria-live="polite" aria-label="Tokenized output">
+                            <div class="empty-state">Enter some text above to see how it gets tokenized...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Explanation Section -->
+                    <div class="explanation-section">
+                        <h3>What is Tokenization?</h3>
+                        <p>Tokenization is the process of breaking down text into smaller units called "tokens" that AI models can understand and process. Think of tokens as the basic building blocks of language for AI systems.</p>
+                        
+                        <p><strong>Key concepts:</strong></p>
+                        <p>• <strong>Tokens aren't always words</strong> - They can be parts of words, whole words, or even punctuation</p>
+                        <p>• <strong>Common patterns get their own tokens</strong> - Frequent letter combinations like "ing" or "tion" become single tokens</p>
+                        <p>• <strong>Each color represents a different token</strong> - Hover over any token to see its ID number and exact content</p>
+                        <p>• <strong>Efficiency matters</strong> - Better tokenization means AI can process text more efficiently and understand context better</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <aside class="sidebar" role="complementary" aria-label="Token Information">
+            <div class="sidebar-content">
+                <div style="padding: 1.5rem;">
+                    <h2 style="color: #1a1a1a; font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Token Details</h2>
+                    
+                    <div id="tokenDetails" class="token-details">
+                        <p style="color: #666; font-style: italic;">Hover over any token to see its details here...</p>
+                    </div>
+                </div>
+                
+                <div style="padding: 1.5rem; border-top: 1px solid #e5e5e7;">
+                    <h2 style="color: #1a1a1a; font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">AI Demos</h2>
+                    <div class="demos-links">
+                        <a href="/tokenization" class="demo-link demo-link-active" aria-current="page">
+                            <strong>Tokenization Demo</strong>
+                            <span>How AI splits text into tokens</span>
+                        </a>
+                        <a href="/confidence" class="demo-link">
+                            <strong>Confidence Visualization</strong>
+                            <span>See AI confidence levels</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-bottom">
+                <div style="padding: 1.5rem;">
+                    <p style="font-size: 0.8rem; color: #666; line-height: 1.4;">
+                        <strong>Demo Notes:</strong><br>
+                        This demo uses GPT-4 tokenization (cl100k_base encoding) which is used by most modern AI models. Different models may tokenize text slightly differently, but the core concepts remain the same.
+                    </p>
+                </div>
+            </div>
+            
+            <footer role="contentinfo">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; font-size: 0.875rem; color: #666; border-top: 1px solid #e5e5e7;">
+                    <span>Copyright &copy; 2025 <a href="https://github.com/edwardjensen/ai-confidence-demo" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">Edward Jensen</a></span>
+                    <a href="/privacy" style="color: #007aff; text-decoration: none;">Privacy Policy</a>
+                </div>
+            </footer>
+        </aside>
+    </div>
+    
+    <!-- Load gpt-tokenizer from bundled assets -->
+    <script type="module">
+        // Import the gpt-tokenizer library from bundled assets (cl100k_base for GPT-4 compatibility)
+        import { encode, decode } from '/assets/gpt-tokenizer/encoding/cl100k_base.js';
+        
+        let currentTokens = [];
+        let debounceTimer = null;
+        
+        // DOM elements
+        const textInput = document.getElementById('textInput');
+        const tokensDisplay = document.getElementById('tokensDisplay');
+        const tokenCount = document.getElementById('tokenCount');
+        const characterCount = document.getElementById('characterCount');
+        const wordCount = document.getElementById('wordCount');
+        const compressionRatio = document.getElementById('compressionRatio');
+        const tokenDetails = document.getElementById('tokenDetails');
+        
+        // Set default text
+        const defaultText = "Hello! This is a demonstration of how AI models break down text into tokens. Try typing something new to see the tokenization in action.";
+        textInput.value = defaultText;
+        
+        // Tokenize text function
+        function tokenizeText(text) {
+            if (!text.trim()) {
+                return [];
+            }
+            
+            try {
+                // Encode the text to get token IDs
+                const tokenIds = encode(text);
+                
+                // Decode each token individually to get the text representation
+                const tokens = tokenIds.map(id => {
+                    const tokenText = decode([id]);
+                    return {
+                        id: id,
+                        text: tokenText,
+                        // Handle special characters display
+                        displayText: tokenText.replace(/\n/g, '\\n').replace(/\t/g, '\\t').replace(/ /g, '·')
+                    };
+                });
+                
+                return tokens;
+            } catch (error) {
+                console.error('Tokenization error:', error);
+                return [];
+            }
+        }
+        
+        // Update display function
+        function updateDisplay(text) {
+            if (!text.trim()) {
+                tokensDisplay.innerHTML = '<div class="empty-state">Enter some text above to see how it gets tokenized...</div>';
+                tokenCount.textContent = '0';
+                characterCount.textContent = '0';
+                wordCount.textContent = '0';
+                compressionRatio.textContent = '0.0';
+                currentTokens = [];
+                return;
+            }
+            
+            // Tokenize the text
+            currentTokens = tokenizeText(text);
+            
+            // Update stats
+            const chars = text.length;
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+            const tokens = currentTokens.length;
+            
+            tokenCount.textContent = tokens.toLocaleString();
+            characterCount.textContent = chars.toLocaleString();
+            wordCount.textContent = words.toLocaleString();
+            compressionRatio.textContent = chars > 0 ? (tokens / chars).toFixed(3) : '0.0';
+            
+            // Create token display
+            if (currentTokens.length > 0) {
+                const tokenElements = currentTokens.map((token, index) => {
+                    return `<span class="token" data-token-id="${token.id}" data-token-index="${index}">
+                        ${escapeHtml(token.displayText)}
+                        <div class="token-tooltip">Token #${token.id}<br>Index: ${index}</div>
+                    </span>`;
+                }).join('');
+                
+                tokensDisplay.innerHTML = tokenElements;
+                
+                // Add hover event listeners
+                tokensDisplay.querySelectorAll('.token').forEach(tokenElement => {
+                    tokenElement.addEventListener('mouseenter', function() {
+                        const tokenIndex = parseInt(this.dataset.tokenIndex);
+                        const token = currentTokens[tokenIndex];
+                        if (token) {
+                            showTokenDetails(token, tokenIndex);
+                        }
+                    });
+                });
+            } else {
+                tokensDisplay.innerHTML = '<div class="empty-state">No tokens generated</div>';
+            }
+        }
+        
+        // Show token details in sidebar
+        function showTokenDetails(token, index) {
+            const originalText = token.text.replace(/\n/g, '\\n').replace(/\t/g, '\\t');
+            tokenDetails.innerHTML = `
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <h3 style="color: #1a1a1a; font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Token #${index + 1}</h3>
+                    <p style="margin-bottom: 0.5rem;"><strong>Text:</strong> <code style="background: #e9ecef; padding: 2px 4px; border-radius: 3px;">"${escapeHtml(originalText)}"</code></p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Token ID:</strong> ${token.id}</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Length:</strong> ${token.text.length} character${token.text.length !== 1 ? 's' : ''}</p>
+                    <p><strong>Type:</strong> ${getTokenType(token.text)}</p>
+                </div>
+                <div style="font-size: 0.875rem; color: #666; line-height: 1.4;">
+                    <p><strong>Understanding this token:</strong></p>
+                    <p>${getTokenExplanation(token.text)}</p>
+                </div>
+            `;
+        }
+        
+        // Get token type for display
+        function getTokenType(text) {
+            if (/^\s+$/.test(text)) return 'Whitespace';
+            if (/^[a-zA-Z]+$/.test(text)) return 'Word/Word part';
+            if (/^[0-9]+$/.test(text)) return 'Number';
+            if (/^[^\w\s]+$/.test(text)) return 'Punctuation';
+            return 'Mixed content';
+        }
+        
+        // Get explanation for token
+        function getTokenExplanation(text) {
+            if (/^\s+$/.test(text)) {
+                return 'Whitespace tokens help AI understand text structure and spacing.';
+            }
+            if (text.length === 1 && /[^\w\s]/.test(text)) {
+                return 'Single punctuation marks usually get their own tokens as they have specific meaning.';
+            }
+            if (text.startsWith(' ')) {
+                return 'This token includes a leading space, showing how AI models handle word boundaries.';
+            }
+            if (text.length > 4) {
+                return 'Longer tokens represent common word patterns or complete words that appear frequently.';
+            }
+            if (/^[a-z]+$/.test(text) && text.length <= 3) {
+                return 'Short letter combinations that appear frequently in the training data become their own tokens.';
+            }
+            return 'This token represents a common pattern the AI model learned during training.';
+        }
+        
+        // Utility function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Handle input changes with debouncing
+        textInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateDisplay(this.value);
+            }, 150); // Reduced debounce for more responsive feel
+        });
+        
+        // Initial tokenization
+        updateDisplay(defaultText);
+        
+        // Handle accessibility
+        textInput.addEventListener('focus', function() {
+            document.getElementById('tokensDisplay').setAttribute('aria-live', 'polite');
+        });
+        
+        textInput.addEventListener('blur', function() {
+            document.getElementById('tokensDisplay').setAttribute('aria-live', 'off');
+        });
+    </script>
+    <script src="assets/privacy-modal.js"></script>
+</body>
+</html>

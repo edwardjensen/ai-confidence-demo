@@ -1,27 +1,44 @@
-# AI Confidence Demonstration Tool
+# AI Demonstration Tools
 
-A web-based tool that demonstrates AI confidence levels using OpenRouter API and log probabilities visualization.
+A collection of web-based educational tools that demonstrate core AI concepts to help staff understand how AI models work and their limitations.
 
 For a detailed explanation of how this works and the concepts behind AI confidence measurement, see the supplemental blog post: [AI Confidence Probabilities](https://www.edwardjensen.net/posts/2025/2025-06/ai-confidence-probabilities)
 
-## Features
+## Available Demos
 
+### 1. **Confidence Visualization** (`/`)
 - Interactive chat interface with AI
 - Real-time confidence visualization using color-coded tokens
 - Hover tooltips showing exact confidence percentages and alternatives
-- **Token usage tracking** - See input, output, and total tokens for each exchange
-- **Improved tooltip system** - No more overlapping tooltips, clean display
-- Clean, modern UI with responsive design (75% screen width)
-- Log probabilities analysis for each AI response token
-- **Production deployment** - Deploy to Cloudflare Pages with automated publishing/unpublishing
+- Token usage tracking for each exchange
+- Log probabilities analysis demonstrating AI uncertainty
+
+### 2. **Tokenization Demo** (`/tokenization`)
+- Real-time text tokenization as you type
+- Visual representation of how AI models split text into tokens
+- Token statistics and compression ratios
+- Interactive token exploration with detailed explanations
+- Client-side processing using GPT-4 tokenization (cl100k_base encoding)
+
+## Common Features
+- Clean, modern UI with consistent design language
+- Responsive design optimized for desktop and mobile
+- Accessibility features with proper ARIA labels
+- Production deployment support via Cloudflare Pages
 
 ## Files
 
-- `logprobs.html` - Main HTML interface
-- `styles.css` - CSS styling
-- `script.js` - JavaScript functionality
-- `server.js` - Node.js Express web server
+### Core Application Files
+- `public/index.html` - Confidence visualization demo (main interface)
+- `public/tokenization.html` - Tokenization demonstration interface
+- `public/assets/styles.css` - Shared CSS styling for consistent design
+- `public/script.js` - JavaScript for confidence visualization
+- `server.js` - Node.js Express development server
+- `build.sh` - Build script for production deployment
 - `package.json` - NPM configuration and dependencies
+
+### Built Files (Generated)
+- `dist/` - Production-ready files created by build.sh
 
 ## Quick Start
 
@@ -69,8 +86,11 @@ The server will automatically:
 1. Start the server using one of the methods above
 2. **Automatic Setup (Recommended)**: If you have a `.env.local` file with your API key, the application will automatically load it and be ready to use
 3. **Manual Setup**: If no environment file is found, enter your OpenRouter API key when prompted
-4. Start chatting with the AI
-5. Hover over colored tokens to see confidence levels and alternatives
+4. **Navigate between demos:**
+   - Main page (`/`) - Confidence visualization with AI chat
+   - Tokenization demo (`/tokenization`) - Real-time text tokenization
+5. **For Confidence Demo:** Start chatting with the AI and hover over colored tokens to see confidence levels
+6. **For Tokenization Demo:** Type or paste text to see real-time tokenization
 
 ## API Key Configuration
 
