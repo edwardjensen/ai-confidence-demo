@@ -127,6 +127,10 @@
                             <strong>Tokenization Demo</strong>
                             <span>How AI splits text into tokens</span>
                         </a>
+                        <a href="/embeddings" class="demo-link">
+                            <strong>Embeddings Visualization</strong>
+                            <span>Explore word representations</span>
+                        </a>
                         <a href="/confidence" class="demo-link demo-link-active" aria-current="page">
                             <strong>Confidence Visualization</strong>
                             <span>See AI confidence levels</span>
@@ -199,13 +203,7 @@
     </div>
 
 
-    <!-- Environment variables will be injected here by build process -->
-    <script id="config">
-        window.AI_DEMO_CONFIG = {
-            apiKey: '%API_KEY%',
-            isProduction: %IS_PRODUCTION%
-        };
-    </script>
+    <!-- API keys are now handled securely by Cloudflare Functions -->
     <script src="script.js"></script>
     <script src="assets/privacy-modal.js"></script>
 </body>

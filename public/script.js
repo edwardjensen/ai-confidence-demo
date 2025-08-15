@@ -1,7 +1,5 @@
-let apiKey = '';
 let temperature = 0.7; // Default temperature value
 let outputMode = 'confidence'; // 'confidence' or 'markdown'
-let isProduction = false;
 
 // Simple markdown parser
 function parseMarkdown(text) {
@@ -69,45 +67,18 @@ function parseMarkdown(text) {
 
 // Initialize the application
 function initializeApp() {
-    // Check if we're in production mode
-    if (window.AI_DEMO_CONFIG && window.AI_DEMO_CONFIG.isProduction) {
-        isProduction = true;
-        apiKey = window.AI_DEMO_CONFIG.apiKey;
-        
-        if (!apiKey || apiKey === '%API_KEY%' || apiKey === 'DEVELOPMENT_MODE_NO_KEY') {
-            if (apiKey === 'DEVELOPMENT_MODE_NO_KEY') {
-                // Local development mode - show API key input
-                showLocalDevMode();
-            } else {
-                showError('Production environment not properly configured. Please contact the administrator.');
-            }
-            return;
-        }
-        
-        // Hide API key container and show chat in production
-        const apiKeyContainer = document.getElementById('apiKeyContainer');
-        if (apiKeyContainer) {
-            apiKeyContainer.style.display = 'none';
-        }
-        
-        const chatContainer = document.getElementById('chatContainer');
-        if (chatContainer) {
-            chatContainer.style.display = 'flex';
-        }
-        
-        document.getElementById('messageInput').focus();
-    } else {
-        // Local development mode - show API key input
-        const apiKeyContainer = document.getElementById('apiKeyContainer');
-        if (apiKeyContainer) {
-            apiKeyContainer.style.display = 'block';
-        }
-        
-        const chatContainer = document.getElementById('chatContainer');
-        if (chatContainer) {
-            chatContainer.style.display = 'none';
-        }
+    // Hide API key container since we use Cloudflare Functions
+    const apiKeyContainer = document.getElementById('apiKeyContainer');
+    if (apiKeyContainer) {
+        apiKeyContainer.style.display = 'none';
     }
+    
+    const chatContainer = document.getElementById('chatContainer');
+    if (chatContainer) {
+        chatContainer.style.display = 'flex';
+    }
+    
+    document.getElementById('messageInput').focus();
 }
 
 function showError(message) {
@@ -122,18 +93,7 @@ function showError(message) {
     document.body.insertBefore(errorDiv, document.body.firstChild);
 }
 
-function setApiKey() {
-    const input = document.getElementById('apiKeyInput');
-    apiKey = input.value.trim();
-    
-    if (apiKey) {
-        document.getElementById('apiKeyContainer').style.display = 'none';
-        document.getElementById('chatContainer').style.display = 'flex';
-        document.getElementById('messageInput').focus();
-    } else {
-        alert('Please enter a valid API key');
-    }
-}
+// API key management removed - handled by Cloudflare Functions
 
 function addMessage(content, isUser = false, isLoading = false, tokenUsage = null, messageTemperature = null) {
     const messagesContainer = document.getElementById('messages');
@@ -272,13 +232,10 @@ async function sendMessage() {
     const loadingMessage = addMessage('', false, true);
     
     try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.href,
-                'X-Title': 'AI Confidence Demo'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 model: 'openai/gpt-4o-mini',
@@ -288,9 +245,6 @@ async function sendMessage() {
                         content: message
                     }
                 ],
-                logprobs: true,
-                top_logprobs: 5,
-                max_tokens: 500,
                 temperature: temperature
             })
         });
@@ -299,7 +253,13 @@ async function sendMessage() {
             throw new Error(`API Error: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'API request failed');
+        }
+        
+        const data = result.data;
         const aiResponse = data.choices[0].message.content;
         const logprobs = data.choices[0].logprobs;
         const tokenUsage = data.usage;

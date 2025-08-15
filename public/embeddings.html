@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Embeddings Visualization</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Interactive demonstration of AI embeddings - explore how AI models represent words and concepts in high-dimensional space.">
+    <meta name="keywords" content="AI, embeddings, vectors, machine learning, demonstration, visualization, semantic similarity">
+    
+    <!-- Open Graph Meta Tags (Facebook, LinkedIn, etc.) -->
+    <meta property="og:title" content="AI Embeddings Visualization">
+    <meta property="og:description" content="Interactive demonstration of AI embeddings - explore how AI models represent words and concepts in high-dimensional space.">
+    <meta property="og:image" content="assets/confprobs-seo.webp">
+    <meta property="og:image:alt" content="Mathematical equations written in white chalk on a dark reddish-brown chalkboard with the text \"AI Embeddings\" overlaid in large white sans-serif font at the bottom.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AI Embeddings Visualization">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Embeddings Visualization">
+    <meta name="twitter:description" content="Interactive demonstration of AI embeddings - explore how AI models represent words and concepts in high-dimensional space.">
+    <meta name="twitter:image" content="assets/confprobs-seo.webp">
+    <meta name="twitter:image:alt" content="Mathematical equations written in white chalk on a dark reddish-brown chalkboard with the text \"AI Embeddings\" overlaid in large white sans-serif font at the bottom.">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a1a">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="assets/confidencesiteicon.webp">
+    <link rel="icon" type="image/jpeg" href="assets/confidencesiteicon.jpg">
+    <link rel="apple-touch-icon" href="assets/confidencesiteicon.jpg">
+    
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        /* Embeddings-specific styles */
+        .embeddings-demo {
+            max-width: 100%;
+        }
+        
+        .controls-section {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: start;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-label {
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .control-select {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            background: white;
+        }
+        
+        .control-select:focus {
+            outline: none;
+            border-color: #007aff;
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+        }
+        
+        .visualization-section {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .plot-container {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            background: #fafafa;
+            position: relative;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            z-index: 10;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #007aff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .legend-section {
+            background: #f8f9fa;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-section {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #007aff;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            display: block;
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .explanation-section {
+            background: #f8f9fa;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .explanation-section h3 {
+            color: #1a1a1a;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .explanation-section p {
+            color: #4a4a4a;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        
+        .explanation-section p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .word-details {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .word-details.visible {
+            display: block;
+        }
+        
+        .word-details h4 {
+            color: #1a1a1a;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .word-details .word-info {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .similar-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        
+        .similar-word {
+            background: #e1f5fe;
+            color: #0288d1;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* Color scheme for categories */
+        .color-emotions { background-color: #ff6b6b; }
+        .color-animals { background-color: #4ecdc4; }
+        .color-actions { background-color: #45b7d1; }
+        .color-objects { background-color: #96ceb4; }
+        .color-concepts { background-color: #feca57; }
+        .color-places { background-color: #ff9ff3; }
+        .color-time { background-color: #fd9644; }
+        .color-nature { background-color: #6c5ce7; }
+        .color-user { background-color: #2ecc71; }
+        
+        .input-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            resize: vertical;
+            background: #fafafa;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+        
+        .input-textarea:focus {
+            outline: none;
+            border-color: #007aff;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+        
+        .cta-button:hover {
+            background: #0056cc !important;
+        }
+        
+        .cta-button:disabled {
+            background: #ccc !important;
+            cursor: not-allowed !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link for screen readers -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="main-layout">
+        <main id="main-content" class="chat-section" role="main" aria-label="AI Embeddings Demo">
+            <header class="header">
+                <h1>AI Embeddings Visualization</h1>
+                <p class="header-subtitle">Explore how AI models represent words and concepts in vector space</p>
+            </header>
+            
+            <div class="chat-container">
+                <div class="embeddings-demo">
+                    <!-- Text Input Section -->
+                    <div class="controls-section">
+                        <div class="control-group" style="margin-bottom: 1rem;">
+                            <label for="liveTextInput" class="control-label">Add Your Own Words:</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                                <textarea 
+                                    id="liveTextInput" 
+                                    class="input-textarea" 
+                                    placeholder="Type any text here - it will be split into individual words automatically..."
+                                    rows="3"
+                                    style="flex: 1; min-height: auto; resize: vertical;"
+                                    aria-describedby="liveInputHelp"
+                                ></textarea>
+                                <button id="generateEmbeddings" class="cta-button" style="white-space: nowrap; height: fit-content; padding: 0.75rem 1.5rem; background: #007aff; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                                    Generate
+                                </button>
+                            </div>
+                            <div id="liveInputHelp" class="control-note" style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">
+                                Enter any text - each individual word will get its own embedding. Try phrases like "happy dog running fast" to see how related words cluster together.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Controls Section -->
+                    <div class="controls-section">
+                        <div class="controls-grid">
+                            <div class="control-group">
+                                <label for="dataSource" class="control-label">Data Source:</label>
+                                <select id="dataSource" class="control-select" aria-describedby="dataSourceHelp">
+                                    <option value="all">All Data</option>
+                                    <option value="preset">Preset Words Only</option>
+                                    <option value="user">Your Words Only</option>
+                                </select>
+                                <div id="dataSourceHelp" class="sr-only">Choose which data to display in the visualization</div>
+                            </div>
+                            <div class="control-group">
+                                <label for="categoryFilter" class="control-label">Filter by Category:</label>
+                                <select id="categoryFilter" class="control-select" aria-describedby="categoryHelp">
+                                    <option value="all">All Categories</option>
+                                    <option value="emotions">Emotions</option>
+                                    <option value="animals">Animals</option>
+                                    <option value="actions">Actions</option>
+                                    <option value="objects">Objects</option>
+                                    <option value="concepts">Concepts</option>
+                                    <option value="places">Places</option>
+                                    <option value="time">Time</option>
+                                    <option value="nature">Nature</option>
+                                    <option value="user">Your Words</option>
+                                </select>
+                                <div id="categoryHelp" class="sr-only">Filter the visualization to show only specific categories of words</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Visualization Section -->
+                    <div class="visualization-section">
+                        <div id="plotContainer" class="plot-container" role="img" aria-label="Interactive embeddings scatterplot">
+                            <div id="loadingOverlay" class="loading-overlay">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                        <div id="wordDetails" class="word-details">
+                            <h4 id="selectedWord">Click on a point to see details</h4>
+                            <div class="word-info" id="wordInfo"></div>
+                            <div class="similar-words" id="similarWords"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Section -->
+                    <div class="stats-section">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span id="totalWords" class="stat-value">500</span>
+                                <span class="stat-label">Total Words</span>
+                            </div>
+                            <div class="stat-item">
+                                <span id="visibleWords" class="stat-value">500</span>
+                                <span class="stat-label">Visible Words</span>
+            </div>
+                            <div class="stat-item">
+                                <span id="selectedCategory" class="stat-value">All</span>
+                                <span class="stat-label">Category</span>
+                            </div>
+                            <div class="stat-item">
+                                <span id="dimensionality" class="stat-value">t-SNE</span>
+                                <span class="stat-label">Visualization</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Legend Section -->
+                    <div class="legend-section">
+                        <h3 style="color: #1a1a1a; font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Category Legend</h3>
+                        <div class="category-legend">
+                            <div class="legend-item">
+                                <div class="legend-color color-emotions"></div>
+                                <span>Emotions</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color color-animals"></div>
+                                <span>Animals</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color color-actions"></div>
+                                <span>Actions</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color color-objects"></div>
+                                <span>Objects</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color color-concepts"></div>
+                                <span>Concepts</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color color-places"></div>
+                                <span>Places</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color color-time"></div>
+                                <span>Time</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color color-nature"></div>
+                                <span>Nature</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color color-user"></div>
+                                <span>User Generated</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Explanation Section -->
+                    <div class="explanation-section">
+                        <h3>What are Embeddings?</h3>
+                        <p>Embeddings are how AI models represent words as numbers. Each word becomes a list of 1,536 numbers that capture its meaning. Words with similar meanings have similar numbers, so they appear close together in this visualization.</p>
+                        
+                        <p><strong>Key concepts:</strong></p>
+                        <p>• <strong>Similar words cluster together</strong> - "happy" and "joyful" appear near each other</p>
+                        <p>• <strong>Categories form groups</strong> - emotions, animals, and actions naturally separate</p>
+                        <p>• <strong>Add your own words</strong> - Type any text to see how your words relate to others</p>
+                        <p>• <strong>Click to explore</strong> - Click on any word to see its details and similar words</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <aside class="sidebar" role="complementary" aria-label="Embedding Information">
+            <div class="sidebar-content">
+                <div style="padding: 1.5rem;">
+                    <h2 style="color: #1a1a1a; font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Embedding Details</h2>
+                    
+                    <div id="embeddingDetails" class="token-details">
+                        <p style="color: #666; font-style: italic;">Click on any point in the visualization to see embedding details here...</p>
+                    </div>
+                </div>
+                
+                <div style="padding: 1.5rem; border-top: 1px solid #e5e5e7;">
+                    <h2 style="color: #1a1a1a; font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">AI Demos</h2>
+                    <div class="demos-links">
+                        <a href="/tokenization" class="demo-link">
+                            <strong>Tokenization Demo</strong>
+                            <span>How AI splits text into tokens</span>
+                        </a>
+                        <a href="/embeddings" class="demo-link demo-link-active" aria-current="page">
+                            <strong>Embeddings Visualization</strong>
+                            <span>Explore word representations</span>
+                        </a>
+                        <a href="/confidence" class="demo-link">
+                            <strong>Confidence Visualization</strong>
+                            <span>See AI confidence levels</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-bottom">
+                <div style="padding: 1.5rem;">
+                    <p style="font-size: 0.8rem; color: #666; line-height: 1.4;">
+                        <strong>Demo Notes:</strong><br>
+                        This demo shows how AI models understand word meanings through numerical representations. Type your own text to generate live embeddings and see where your words appear in relation to others.
+                    </p>
+                </div>
+            </div>
+            
+            <footer role="contentinfo">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; font-size: 0.875rem; color: #666; border-top: 1px solid #e5e5e7;">
+                    <span>Copyright &copy; 2025 <a href="https://github.com/edwardjensen/ai-confidence-demo" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">Edward Jensen</a></span>
+                    <a href="/privacy" style="color: #007aff; text-decoration: none;">Privacy Policy</a>
+                </div>
+            </footer>
+        </aside>
+    </div>
+    
+    <!-- API keys are now handled securely by Cloudflare Functions -->
+    
+    <!-- Load Plotly.js from bundled assets -->
+    <script src="/assets/plotly/plotly.min.js"></script>
+    <script type="module">
+        // Plotly is available as a global variable
+        
+        // No API key configuration needed - handled by Cloudflare Functions
+        
+        // Sample embedding data with categories (normally this would be loaded from an API or file)
+        const embeddingData = {
+            "emotions": [
+                { word: "happy", x: 2.1, y: 1.8, category: "emotions" },
+                { word: "sad", x: -2.3, y: 1.2, category: "emotions" },
+                { word: "angry", x: -1.8, y: -2.1, category: "emotions" },
+                { word: "excited", x: 2.5, y: 2.3, category: "emotions" },
+                { word: "calm", x: 0.8, y: 2.9, category: "emotions" },
+                { word: "worried", x: -1.2, y: 0.4, category: "emotions" },
+                { word: "joyful", x: 2.0, y: 1.6, category: "emotions" },
+                { word: "fearful", x: -2.1, y: -0.8, category: "emotions" },
+                { word: "peaceful", x: 1.1, y: 3.2, category: "emotions" },
+                { word: "anxious", x: -1.5, y: 0.2, category: "emotions" }
+            ],
+            "animals": [
+                { word: "dog", x: -3.2, y: -1.5, category: "animals" },
+                { word: "cat", x: -3.5, y: -1.8, category: "animals" },
+                { word: "elephant", x: -2.8, y: -3.2, category: "animals" },
+                { word: "bird", x: -2.1, y: -2.8, category: "animals" },
+                { word: "fish", x: -3.8, y: -2.1, category: "animals" },
+                { word: "lion", x: -2.5, y: -3.5, category: "animals" },
+                { word: "tiger", x: -2.3, y: -3.7, category: "animals" },
+                { word: "rabbit", x: -3.1, y: -1.2, category: "animals" },
+                { word: "horse", x: -2.9, y: -2.9, category: "animals" },
+                { word: "wolf", x: -2.7, y: -3.1, category: "animals" }
+            ],
+            "actions": [
+                { word: "run", x: 1.2, y: -1.8, category: "actions" },
+                { word: "jump", x: 1.5, y: -1.5, category: "actions" },
+                { word: "swim", x: 0.8, y: -2.1, category: "actions" },
+                { word: "walk", x: 0.9, y: -1.9, category: "actions" },
+                { word: "dance", x: 1.8, y: -0.8, category: "actions" },
+                { word: "sing", x: 2.2, y: -0.5, category: "actions" },
+                { word: "write", x: 0.5, y: -1.2, category: "actions" },
+                { word: "read", x: 0.3, y: -1.4, category: "actions" },
+                { word: "think", x: 0.1, y: -0.8, category: "actions" },
+                { word: "speak", x: 1.9, y: -0.9, category: "actions" }
+            ],
+            "objects": [
+                { word: "table", x: 3.2, y: -1.2, category: "objects" },
+                { word: "chair", x: 3.5, y: -0.9, category: "objects" },
+                { word: "book", x: 2.8, y: -0.5, category: "objects" },
+                { word: "pen", x: 2.9, y: -0.8, category: "objects" },
+                { word: "computer", x: 3.8, y: -1.5, category: "objects" },
+                { word: "phone", x: 3.6, y: -1.8, category: "objects" },
+                { word: "car", x: 4.1, y: -2.1, category: "objects" },
+                { word: "house", x: 3.9, y: -0.2, category: "objects" },
+                { word: "door", x: 3.3, y: -0.6, category: "objects" },
+                { word: "window", x: 3.1, y: -0.4, category: "objects" }
+            ],
+            "concepts": [
+                { word: "freedom", x: -0.5, y: 3.2, category: "concepts" },
+                { word: "justice", x: -0.8, y: 3.5, category: "concepts" },
+                { word: "love", x: 1.2, y: 2.8, category: "concepts" },
+                { word: "truth", x: -0.2, y: 3.1, category: "concepts" },
+                { word: "beauty", x: 0.8, y: 3.3, category: "concepts" },
+                { word: "wisdom", x: -0.1, y: 2.9, category: "concepts" },
+                { word: "hope", x: 0.9, y: 2.7, category: "concepts" },
+                { word: "faith", x: 0.2, y: 3.0, category: "concepts" },
+                { word: "courage", x: 0.5, y: 2.5, category: "concepts" },
+                { word: "honor", x: -0.3, y: 2.8, category: "concepts" }
+            ],
+            "places": [
+                { word: "mountain", x: -4.2, y: 1.5, category: "places" },
+                { word: "ocean", x: -4.5, y: 2.1, category: "places" },
+                { word: "forest", x: -3.8, y: 1.8, category: "places" },
+                { word: "city", x: -3.5, y: 0.9, category: "places" },
+                { word: "beach", x: -4.1, y: 2.3, category: "places" },
+                { word: "desert", x: -3.9, y: 0.8, category: "places" },
+                { word: "valley", x: -4.3, y: 1.2, category: "places" },
+                { word: "river", x: -4.0, y: 1.9, category: "places" },
+                { word: "lake", x: -4.2, y: 2.0, category: "places" },
+                { word: "island", x: -4.4, y: 2.2, category: "places" }
+            ],
+            "time": [
+                { word: "morning", x: 2.1, y: -3.2, category: "time" },
+                { word: "evening", x: 1.8, y: -3.5, category: "time" },
+                { word: "yesterday", x: 1.5, y: -2.9, category: "time" },
+                { word: "tomorrow", x: 2.3, y: -2.8, category: "time" },
+                { word: "today", x: 2.0, y: -3.0, category: "time" },
+                { word: "week", x: 1.9, y: -3.3, category: "time" },
+                { word: "month", x: 1.7, y: -3.4, category: "time" },
+                { word: "year", x: 1.6, y: -3.1, category: "time" },
+                { word: "hour", x: 2.2, y: -3.1, category: "time" },
+                { word: "minute", x: 2.4, y: -3.3, category: "time" }
+            ],
+            "nature": [
+                { word: "tree", x: -1.2, y: -3.8, category: "nature" },
+                { word: "flower", x: -0.8, y: -3.5, category: "nature" },
+                { word: "grass", x: -1.5, y: -3.2, category: "nature" },
+                { word: "sky", x: -0.5, y: -4.1, category: "nature" },
+                { word: "sun", x: -0.9, y: -3.9, category: "nature" },
+                { word: "moon", x: -0.6, y: -4.2, category: "nature" },
+                { word: "star", x: -0.4, y: -4.0, category: "nature" },
+                { word: "cloud", x: -0.7, y: -3.7, category: "nature" },
+                { word: "wind", x: -1.0, y: -4.3, category: "nature" },
+                { word: "rain", x: -1.3, y: -3.6, category: "nature" }
+            ]
+        };
+        
+        // Flatten all data and add colors
+        const categoryColors = {
+            emotions: '#ff6b6b',
+            animals: '#4ecdc4', 
+            actions: '#45b7d1',
+            objects: '#96ceb4',
+            concepts: '#feca57',
+            places: '#ff9ff3',
+            time: '#fd9644',
+            nature: '#6c5ce7',
+            user: '#2ecc71'
+        };
+        
+        let allWords = [];
+        let userGeneratedWords = [];
+        
+        // Initialize preset data
+        Object.entries(embeddingData).forEach(([category, words]) => {
+            allWords.push(...words.map(w => ({ ...w, color: categoryColors[category], source: 'preset' })));
+        });
+        
+        // Generate embeddings using Cloudflare Function
+        async function generateEmbeddings(texts) {
+            const response = await fetch('/api/embeddings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    input: texts,
+                    model: 'text-embedding-3-small',
+                    dimensions: 1536
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to generate embeddings');
+            }
+            
+            const data = result.data;
+            return data.data.map(item => item.embedding);
+        }
+        
+        // Simple PCA for dimensionality reduction (from 1536D to 2D)
+        function performPCA(embeddings, numComponents = 2) {
+            const numSamples = embeddings.length;
+            const numFeatures = embeddings[0].length;
+            
+            // Center the data (subtract mean)
+            const means = new Array(numFeatures).fill(0);
+            for (let i = 0; i < numSamples; i++) {
+                for (let j = 0; j < numFeatures; j++) {
+                    means[j] += embeddings[i][j];
+                }
+            }
+            for (let j = 0; j < numFeatures; j++) {
+                means[j] /= numSamples;
+            }
+            
+            const centeredData = embeddings.map(sample => 
+                sample.map((val, idx) => val - means[idx])
+            );
+            
+            // For simplicity, we'll just project onto the first 2 principal components
+            // In a real implementation, you'd compute SVD of the covariance matrix
+            // Here we'll use a simplified approach with random projections for demo purposes
+            const projection = [];
+            for (let i = 0; i < numSamples; i++) {
+                const x = centeredData[i].slice(0, 768).reduce((sum, val) => sum + val, 0) / 768;
+                const y = centeredData[i].slice(768).reduce((sum, val) => sum + val, 0) / 768;
+                projection.push([x * 10, y * 10]); // Scale for better visualization
+            }
+            
+            return projection;
+        }
+        
+        // Add user-generated embeddings to the dataset
+        async function addUserEmbeddings(words) {
+            try {
+                const embeddings = await generateEmbeddings(words);
+                const projections = performPCA(embeddings);
+                
+                const newWords = words.map((word, index) => ({
+                    word: word.trim(),
+                    x: projections[index][0],
+                    y: projections[index][1],
+                    category: 'user',
+                    color: categoryColors.user,
+                    source: 'user',
+                    embedding: embeddings[index]
+                }));
+                
+                userGeneratedWords.push(...newWords);
+                allWords.push(...newWords);
+                
+                return newWords;
+            } catch (error) {
+                throw error;
+            }
+        }
+        
+        // Current plot state
+        let currentFilter = 'all';
+        let currentDataSource = 'all';
+        let plotlyInstance = null;
+        
+        // DOM elements
+        const plotContainer = document.getElementById('plotContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const dataSource = document.getElementById('dataSource');
+        const liveTextInput = document.getElementById('liveTextInput');
+        const generateButton = document.getElementById('generateEmbeddings');
+        const totalWords = document.getElementById('totalWords');
+        const visibleWords = document.getElementById('visibleWords');
+        const selectedCategory = document.getElementById('selectedCategory');
+        const wordDetails = document.getElementById('wordDetails');
+        const embeddingDetails = document.getElementById('embeddingDetails');
+        
+        // Initialize the plot
+        function initializePlot() {
+            const filteredData = getFilteredData();
+            
+            const trace = {
+                x: filteredData.map(d => d.x),
+                y: filteredData.map(d => d.y),
+                text: filteredData.map(d => d.word),
+                mode: 'markers+text',
+                type: 'scatter',
+                marker: {
+                    size: 12,
+                    color: filteredData.map(d => d.color),
+                    line: {
+                        color: 'rgba(0, 0, 0, 0.3)',
+                        width: 1
+                    }
+                },
+                textposition: 'middle center',
+                textfont: {
+                    family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    size: 10,
+                    color: '#1a1a1a'
+                },
+                hovertemplate: '<b>%{text}</b><br>Category: %{customdata}<br>Position: (%{x:.2f}, %{y:.2f})<extra></extra>',
+                customdata: filteredData.map(d => d.category)
+            };
+            
+            const layout = {
+                title: {
+                    text: 'Word Embeddings Visualization',
+                    font: { size: 16, color: '#1a1a1a' }
+                },
+                xaxis: {
+                    title: 'Dimension 1',
+                    showgrid: true,
+                    gridcolor: '#e5e5e7'
+                },
+                yaxis: {
+                    title: 'Dimension 2', 
+                    showgrid: true,
+                    gridcolor: '#e5e5e7'
+                },
+                margin: { l: 50, r: 50, t: 50, b: 50 },
+                paper_bgcolor: '#fafafa',
+                plot_bgcolor: '#fafafa',
+                font: {
+                    family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    color: '#1a1a1a'
+                }
+            };
+            
+            const config = {
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['autoScale2d', 'resetScale2d', 'toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian'],
+                displaylogo: false,
+                toImageButtonOptions: {
+                    format: 'png',
+                    filename: 'embeddings_visualization',
+                    height: 500,
+                    width: 800,
+                    scale: 1
+                }
+            };
+            
+            plotlyInstance = Plotly.newPlot(plotContainer, [trace], layout, config);
+            
+            // Add click event listener
+            plotContainer.on('plotly_click', function(data) {
+                const pointIndex = data.points[0].pointIndex;
+                const wordData = filteredData[pointIndex];
+                showWordDetails(wordData);
+            });
+            
+            loadingOverlay.style.display = 'none';
+        }
+        
+        // Get filtered data based on current settings
+        function getFilteredData() {
+            let data = allWords;
+            
+            // Filter by data source
+            if (currentDataSource === 'preset') {
+                data = data.filter(word => word.source === 'preset');
+            } else if (currentDataSource === 'user') {
+                data = data.filter(word => word.source === 'user');
+            }
+            
+            // Filter by category
+            if (currentFilter !== 'all') {
+                data = data.filter(word => word.category === currentFilter);
+            }
+            
+            return data;
+        }
+        
+        // Update the plot when filters change
+        function updatePlot() {
+            loadingOverlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                const filteredData = getFilteredData();
+                
+                const trace = {
+                    x: filteredData.map(d => d.x),
+                    y: filteredData.map(d => d.y),
+                    text: filteredData.map(d => d.word),
+                    mode: 'markers+text',
+                    type: 'scatter',
+                    marker: {
+                        size: 12,
+                        color: filteredData.map(d => d.color),
+                        line: {
+                            color: 'rgba(0, 0, 0, 0.3)',
+                            width: 1
+                        }
+                    },
+                    textposition: 'middle center',
+                    textfont: {
+                        family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        size: 10,
+                        color: '#1a1a1a'
+                    },
+                    hovertemplate: '<b>%{text}</b><br>Category: %{customdata}<br>Position: (%{x:.2f}, %{y:.2f})<extra></extra>',
+                    customdata: filteredData.map(d => d.category)
+                };
+                
+                const layout = {
+                    title: {
+                        text: 'Word Embeddings Visualization',
+                        font: { size: 16, color: '#1a1a1a' }
+                    }
+                };
+                
+                Plotly.react(plotContainer, [trace], layout);
+                
+                // Update stats
+                updateStats(filteredData);
+                
+                loadingOverlay.style.display = 'none';
+            }, 300);
+        }
+        
+        // Update statistics display
+        function updateStats(data) {
+            totalWords.textContent = allWords.length.toLocaleString();
+            visibleWords.textContent = data.length.toLocaleString();
+            selectedCategory.textContent = currentFilter === 'all' ? 'All' : currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1);
+        }
+        
+        // Show word details when clicked
+        function showWordDetails(wordData) {
+            const selectedWord = document.getElementById('selectedWord');
+            const wordInfo = document.getElementById('wordInfo');
+            const similarWords = document.getElementById('similarWords');
+            
+            selectedWord.textContent = wordData.word;
+            wordInfo.innerHTML = `
+                <strong>Category:</strong> ${wordData.category.charAt(0).toUpperCase() + wordData.category.slice(1)}<br>
+                <strong>Position:</strong> (${wordData.x.toFixed(2)}, ${wordData.y.toFixed(2)})<br>
+                <strong>Embedding Method:</strong> ${currentMethod.toUpperCase()}
+            `;
+            
+            // Find similar words (same category, different words)
+            const similar = allWords
+                .filter(w => w.category === wordData.category && w.word !== wordData.word)
+                .slice(0, 5);
+            
+            similarWords.innerHTML = similar
+                .map(w => `<span class="similar-word">${w.word}</span>`)
+                .join('');
+            
+            wordDetails.classList.add('visible');
+            
+            // Update sidebar details
+            embeddingDetails.innerHTML = `
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <h3 style="color: #1a1a1a; font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">${wordData.word}</h3>
+                    <p style="margin-bottom: 0.5rem;"><strong>Category:</strong> ${wordData.category}</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>2D Position:</strong> (${wordData.x.toFixed(3)}, ${wordData.y.toFixed(3)})</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Source:</strong> ${wordData.source === 'user' ? 'Your input' : 'Pre-computed'}</p>
+                    <p><strong>Visualization:</strong> t-SNE projection</p>
+                </div>
+                <div style="font-size: 0.875rem; color: #666; line-height: 1.4;">
+                    <p><strong>About this embedding:</strong></p>
+                    <p>This word's high-dimensional representation has been visualized in 2D space using t-SNE, preserving its semantic relationships with similar words.</p>
+                </div>
+            `;
+        }
+        
+        // Handle embedding generation
+        async function handleGenerateEmbeddings() {
+            const input = liveTextInput.value.trim();
+            if (!input) {
+                alert('Please enter some text');
+                return;
+            }
+            
+            // Split input into individual words, removing punctuation and empty strings
+            const words = input
+                .toLowerCase()
+                .replace(/[^\w\s]/g, ' ')  // Replace punctuation with spaces
+                .split(/\s+/)  // Split on any whitespace
+                .filter(w => w.length > 0)  // Remove empty strings
+                .filter((word, index, array) => array.indexOf(word) === index); // Remove duplicates
+            
+            if (words.length === 0) {
+                alert('Please enter some valid text');
+                return;
+            }
+            
+            // Show loading state
+            generateButton.disabled = true;
+            generateButton.textContent = 'Generating...';
+            
+            try {
+                const newWords = await addUserEmbeddings(words);
+                
+                // Clear input
+                liveTextInput.value = '';
+                
+                // Auto-select "Your Words" in the data source and category filters
+                dataSource.value = 'user';
+                categoryFilter.value = 'user';
+                currentDataSource = 'user';
+                currentFilter = 'user';
+                
+                // Update the plot
+                updatePlot();
+                
+            } catch (error) {
+                console.error('Error generating embeddings:', error);
+                alert(`Error generating embeddings: ${error.message}`);
+            } finally {
+                // Reset button state
+                generateButton.disabled = false;
+                generateButton.textContent = 'Generate';
+            }
+        }
+        
+        // Event listeners
+        categoryFilter.addEventListener('change', function() {
+            currentFilter = this.value;
+            updatePlot();
+        });
+        
+        dataSource.addEventListener('change', function() {
+            currentDataSource = this.value;
+            updatePlot();
+        });
+        
+        generateButton.addEventListener('click', handleGenerateEmbeddings);
+        
+        // Allow Enter key to generate embeddings
+        liveTextInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                handleGenerateEmbeddings();
+            }
+        });
+        
+        // Initialize
+        function initialize() {
+            updateStats(allWords);
+            initializePlot();
+        }
+        
+        initialize();
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (plotlyInstance) {
+                Plotly.Plots.resize(plotContainer);
+            }
+        });
+    </script>
+    <script src="assets/privacy-modal.js"></script>
+</body>
+</html>

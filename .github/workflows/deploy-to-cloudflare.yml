@@ -1,0 +1,71 @@
+name: Deploy to Cloudflare Pages with Environment Variables
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # Allow manual deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build project
+      run: npm run build
+
+    - name: Install Wrangler
+      run: npm install -g wrangler
+
+    - name: Deploy to Cloudflare Pages
+      uses: cloudflare/pages-action@v1
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: ai-confidence-demo
+        directory: dist
+        # Automatically deploy to production on main branch
+        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Environment Variables (Production only)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Authenticate with Cloudflare
+        echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | wrangler auth login --api-token
+        
+        # Deploy environment variables using Wrangler
+        echo "🔐 Setting up secure environment variables..."
+        
+        echo "${{ secrets.OPENROUTER_API_KEY_V2 }}" | wrangler pages secret put OPENROUTER_API_KEY_V2 \
+          --project-name=ai-confidence-demo --env=production
+        
+        echo "${{ secrets.OPENAI_EMBEDDINGS_API_KEY }}" | wrangler pages secret put OPENAI_EMBEDDINGS_API_KEY \
+          --project-name=ai-confidence-demo --env=production
+          
+        echo "✅ Environment variables configured successfully!"
+
+    - name: Deployment Summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Project**: AI Confidence Demo" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Preview' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **API Keys**: ${{ github.ref == 'refs/heads/main' && '🔐 Configured securely' || '⚠️ Not configured (preview only)' }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🛡️ Security Features Active:" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ API keys secured via Cloudflare Functions" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ No client-side API key exposure" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Built-in rate limiting and validation" >> $GITHUB_STEP_SUMMARY

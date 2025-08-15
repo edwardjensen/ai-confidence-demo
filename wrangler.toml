@@ -1,0 +1,14 @@
+name = "ai-confidence-demo"
+compatibility_date = "2023-12-01"
+pages_build_output_dir = "dist"
+
+[env.production]
+name = "ai-confidence-demo"
+
+[[env.production.vars]]
+name = "OPENROUTER_API_KEY_V2"
+# Set this in Cloudflare Pages dashboard > Settings > Environment variables
+
+[[env.production.vars]]  
+name = "OPENAI_EMBEDDINGS_API_KEY"
+# Set this in Cloudflare Pages dashboard > Settings > Environment variables

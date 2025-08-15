@@ -24,22 +24,133 @@ app.use((req, res, next) => {
 // Parse JSON bodies
 app.use(express.json());
 
-// API endpoint to get configuration (including API key)
-app.get('/api/config', (req, res) => {
-    const apiKey = process.env.OPENROUTER_API_KEY;
+// API endpoint to proxy OpenRouter chat completions (for local development)
+app.post('/api/chat', async (req, res) => {
+    const openrouterApiKey = process.env.OPENROUTER_API_KEY;
     
-    if (!apiKey) {
-        return res.json({
+    if (!openrouterApiKey) {
+        return res.status(500).json({
             success: false,
-            message: 'OPENROUTER_API_KEY not found in environment variables'
+            error: 'OpenRouter API key not configured in .env.local'
         });
     }
     
-    res.json({
-        success: true,
-        apiKey: apiKey,
-        isProduction: false
-    });
+    try {
+        const { model, messages, temperature } = req.body;
+        
+        if (!messages || !Array.isArray(messages)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid request: messages required'
+            });
+        }
+        
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${openrouterApiKey}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': req.get('referer') || 'http://localhost:8000',
+                'X-Title': 'AI Confidence Demo'
+            },
+            body: JSON.stringify({
+                model: model || 'openai/gpt-4o-mini',
+                messages: messages,
+                temperature: temperature || 0.7,
+                logprobs: true,
+                top_logprobs: 3
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            console.error('OpenRouter API Error:', data);
+            return res.status(response.status).json({
+                success: false,
+                error: data.error?.message || 'API request failed'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: data
+        });
+        
+    } catch (error) {
+        console.error('Server error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// API endpoint to proxy OpenAI embeddings (for local development)
+app.post('/api/embeddings', async (req, res) => {
+    const openaiKey = process.env.OPENAI_KEY;
+    
+    if (!openaiKey) {
+        return res.status(500).json({
+            success: false,
+            error: 'OpenAI API key not configured in .env.local'
+        });
+    }
+    
+    try {
+        const { input, model, dimensions } = req.body;
+        
+        if (!input || (Array.isArray(input) && input.length === 0)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid request: input required'
+            });
+        }
+        
+        // Limit inputs to prevent abuse
+        const inputs = Array.isArray(input) ? input : [input];
+        if (inputs.length > 50) {
+            return res.status(400).json({
+                success: false,
+                error: 'Too many inputs. Maximum 50 allowed.'
+            });
+        }
+        
+        const response = await fetch('https://api.openai.com/v1/embeddings', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${openaiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                input: input,
+                model: model || 'text-embedding-3-small',
+                dimensions: dimensions || 1536
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            console.error('OpenAI API Error:', data);
+            return res.status(response.status).json({
+                success: false,
+                error: data.error?.message || 'API request failed'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: data
+        });
+        
+    } catch (error) {
+        console.error('Server error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
 });
 
 // Serve the main landing page at root
@@ -55,6 +166,11 @@ app.get('/confidence', (req, res) => {
 // Serve the tokenization demo
 app.get('/tokenization', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'tokenization.html'));
+});
+
+// Serve the embeddings visualization demo
+app.get('/embeddings', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'embeddings.html'));
 });
 
 // Serve the privacy policy page
