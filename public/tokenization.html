@@ -356,10 +356,10 @@
         </aside>
     </div>
     
-    <!-- Load gpt-tokenizer from local node_modules -->
+    <!-- Load gpt-tokenizer from bundled assets -->
     <script type="module">
-        // Import the gpt-tokenizer library from local installation (cl100k_base for GPT-4 compatibility)
-        import { encode, decode } from '/node_modules/gpt-tokenizer/esm/encoding/cl100k_base.js';
+        // Import the gpt-tokenizer library from bundled assets (cl100k_base for GPT-4 compatibility)
+        import { encode, decode } from '/assets/gpt-tokenizer/encoding/cl100k_base.js';
         
         let currentTokens = [];
         let debounceTimer = null;

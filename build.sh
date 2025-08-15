@@ -19,6 +19,13 @@ mkdir -p dist
 # Copy all files from public to dist
 cp -r public/* dist/
 
+# Copy gpt-tokenizer library files to dist for bundling
+echo "📦 Bundling gpt-tokenizer library files..."
+mkdir -p dist/assets/gpt-tokenizer
+cp -r node_modules/gpt-tokenizer/esm/* dist/assets/gpt-tokenizer/
+mkdir -p dist/assets/gpt-tokenizer/data
+cp -r node_modules/gpt-tokenizer/data/* dist/assets/gpt-tokenizer/data/
+
 # Replace API key placeholder in confidence.html
 if [ -z "$OPENROUTER_API_KEY" ]; then
     echo "⚠️  OPENROUTER_API_KEY environment variable is not set"
