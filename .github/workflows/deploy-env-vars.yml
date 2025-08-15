@@ -39,5 +39,10 @@ jobs:
 
     - name: Verify deployment
       run: |
+        echo "🔍 Verifying environment variables..."
+        wrangler pages secret list --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --env=production
         echo "✅ Environment variables deployed successfully!"
         echo "🔐 API keys are now securely stored in Cloudflare Pages"
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

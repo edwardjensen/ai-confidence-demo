@@ -7,11 +7,27 @@ export async function onRequestPost(context) {
     
     try {
         // Get the OpenAI API key from environment variables
+        // In Cloudflare Pages Functions, secrets are available via env
         const apiKey = env.OPENAI_EMBEDDINGS_API_KEY;
-        if (!apiKey) {
+        
+        console.log('Context env keys:', Object.keys(env || {}));
+        console.log('Process env keys:', Object.keys(process.env || {}));
+        console.log('OPENAI_EMBEDDINGS_API_KEY from env:', !!apiKey);
+        console.log('OPENAI_EMBEDDINGS_API_KEY from process.env:', !!process.env.OPENAI_EMBEDDINGS_API_KEY);
+        
+        // Try both env and process.env
+        const finalApiKey = apiKey || process.env.OPENAI_EMBEDDINGS_API_KEY;
+        
+        if (!finalApiKey) {
             return new Response(JSON.stringify({
                 success: false,
-                error: 'API key not configured'
+                error: 'API key not configured',
+                debug: {
+                    envKeys: Object.keys(env || {}),
+                    processEnvKeys: Object.keys(process.env || {}),
+                    hasEnvKey: !!apiKey,
+                    hasProcessEnvKey: !!process.env.OPENAI_EMBEDDINGS_API_KEY
+                }
             }), {
                 status: 500,
                 headers: { 'Content-Type': 'application/json' }
@@ -67,7 +83,7 @@ export async function onRequestPost(context) {
         const response = await fetch('https://api.openai.com/v1/embeddings', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
+                'Authorization': `Bearer ${finalApiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(openAIRequest)

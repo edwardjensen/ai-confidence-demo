@@ -7,11 +7,27 @@ export async function onRequestPost(context) {
     
     try {
         // Get the OpenRouter API key from environment variables
+        // In Cloudflare Pages Functions, secrets are available via env
         const apiKey = env.OPENROUTER_API_KEY_V2;
-        if (!apiKey) {
+        
+        console.log('Context env keys:', Object.keys(env || {}));
+        console.log('Process env keys:', Object.keys(process.env || {}));
+        console.log('OPENROUTER_API_KEY_V2 from env:', !!apiKey);
+        console.log('OPENROUTER_API_KEY_V2 from process.env:', !!process.env.OPENROUTER_API_KEY_V2);
+        
+        // Try both env and process.env
+        const finalApiKey = apiKey || process.env.OPENROUTER_API_KEY_V2;
+        
+        if (!finalApiKey) {
             return new Response(JSON.stringify({
                 success: false,
-                error: 'API key not configured'
+                error: 'API key not configured',
+                debug: {
+                    envKeys: Object.keys(env || {}),
+                    processEnvKeys: Object.keys(process.env || {}),
+                    hasEnvKey: !!apiKey,
+                    hasProcessEnvKey: !!process.env.OPENROUTER_API_KEY_V2
+                }
             }), {
                 status: 500,
                 headers: { 'Content-Type': 'application/json' }
@@ -45,7 +61,7 @@ export async function onRequestPost(context) {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
+                'Authorization': `Bearer ${finalApiKey}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': request.headers.get('referer') || 'https://ai-confidence-demo.pages.dev',
                 'X-Title': 'AI Confidence Demo'
