@@ -303,15 +303,15 @@ document.getElementById('messageInput').addEventListener('keydown', function(e) 
     }
 });
 
-// Handle API key input on Enter (only in local mode)
-const apiKeyInput = document.getElementById('apiKeyInput');
-if (apiKeyInput) {
-    apiKeyInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            setApiKey();
-        }
-    });
-}
+// Handle API key input on Enter (removed - using Cloudflare Functions)
+// const apiKeyInput = document.getElementById('apiKeyInput');
+// if (apiKeyInput) {
+//     apiKeyInput.addEventListener('keydown', function(e) {
+//         if (e.key === 'Enter') {
+//             setApiKey();
+//         }
+//     });
+// }
 
 // Dynamic tooltip positioning
 function positionTooltip(token, tooltip) {
@@ -692,10 +692,10 @@ function initializeAccessibility() {
         sendButton.addEventListener('click', enhancedSendMessage);
     }
     
-    // API Key submit button
-    const apiKeySubmit = document.getElementById('apiKeySubmit');
-    if (apiKeySubmit) {
-        apiKeySubmit.addEventListener('click', setApiKey);
+    // API Key submit button (removed - using Cloudflare Functions)
+    // const apiKeySubmit = document.getElementById('apiKeySubmit');
+    // if (apiKeySubmit) {
+    //     apiKeySubmit.addEventListener('click', setApiKey);
     }
     
     // Privacy policy link
