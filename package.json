@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "express": "^5.1.0",
+    "gpt-tokenizer": "^3.0.1",
     "open": "^10.1.2",
     "wrangler": "^4.22.0"
   },

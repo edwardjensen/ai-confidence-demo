@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Confidence Probabilities Demonstration</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Interactive demonstration of AI confidence levels through visual token highlighting and probability analysis.">
+    <meta name="keywords" content="AI, confidence, machine learning, token probability, demonstration, OpenRouter">
+    
+    <!-- Open Graph Meta Tags (Facebook, LinkedIn, etc.) -->
+    <meta property="og:title" content="AI Confidence Probabilities Demonstration">
+    <meta property="og:description" content="Interactive demonstration of AI confidence levels through visual token highlighting and probability analysis.">
+    <meta property="og:image" content="assets/confprobs-seo.webp">
+    <meta property="og:image:alt" content="Mathematical equations written in white chalk on a dark reddish-brown chalkboard with the text \"AI Confidence Probabilities\" overlaid in large white sans-serif font at the bottom. The chalk writing includes various mathematical formulas and symbols including \"dt\", \"∂/∂t\", \"g(M-N₀)(1-εS)S\", \"Tn\", \"Tp\", \"ds/dt = Tb g(M-N₀)(1-εS)S + M-N S/Tn Tp\", \"Ft₀x₀\", \"Pt = Tn\", \"TSε\", and other partially visible mathematical notation and equations.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AI Confidence Probabilities Demonstration">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Confidence Probabilities Demonstration">
+    <meta name="twitter:description" content="Interactive demonstration of AI confidence levels through visual token highlighting and probability analysis.">
+    <meta name="twitter:image" content="assets/confprobs-seo.webp">
+    <meta name="twitter:image:alt" content="Mathematical equations written in white chalk on a dark reddish-brown chalkboard with the text \"AI Confidence Probabilities\" overlaid in large white sans-serif font at the bottom. The chalk writing includes various mathematical formulas and symbols including \"dt\", \"∂/∂t\", \"g(M-N₀)(1-εS)S\", \"Tn\", \"Tp\", \"ds/dt = Tb g(M-N₀)(1-εS)S + M-N S/Tn Tp\", \"Ft₀x₀\", \"Pt = Tn\", \"TSε\", and other partially visible mathematical notation and equations.">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a1a">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="assets/confidencesiteicon.webp">
+    <link rel="icon" type="image/jpeg" href="assets/confidencesiteicon.jpg">
+    <link rel="apple-touch-icon" href="assets/confidencesiteicon.jpg">
+    
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <!-- Skip to main content link for screen readers -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="main-layout">
+        <main id="main-content" class="chat-section" role="main" aria-label="AI Chat Interface">
+            <!-- API Key Input Container (for local development) -->
+            <section id="apiKeyContainer" class="api-key-container" style="display: none;" role="dialog" aria-labelledby="devModeTitle" aria-describedby="devModeDesc">
+                <div class="api-key-content">
+                    <h2 id="devModeTitle">🔧 Development Mode</h2>
+                    <p id="devModeDesc">Please enter your OpenRouter API key to continue:</p>
+                    <div class="api-key-input-group">
+                        <label for="apiKeyInput" class="visually-hidden">OpenRouter API Key</label>
+                        <input 
+                            type="password" 
+                            id="apiKeyInput" 
+                            placeholder="Enter your OpenRouter API key..."
+                            class="api-key-input"
+                            aria-describedby="apiKeyNote"
+                            aria-required="true"
+                        >
+                        <button id="apiKeySubmit" class="api-key-submit" aria-describedby="apiKeyNote">
+                            Connect
+                        </button>
+                    </div>
+                    <p id="apiKeyNote" class="api-key-note">
+                        Get your API key from <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">OpenRouter<span class="visually-hidden"> (opens in new tab)</span></a>
+                    </p>
+                </div>
+            </section>
+       
+            <section class="chat-container" id="chatContainer" aria-label="Chat Messages and Input">
+                <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Chat messages">
+                    <div id="disclaimerText" class="disclaimer-message" role="note" aria-label="Disclaimer about AI limitations">
+                        <div class="disclaimer-content">
+                            <p>AI models can produce errors, inappropriate content, or offensive material without warning. Risk increases significantly at higher creativity settings. This educational tool demonstrates AI limitations - users are responsible for evaluating all outputs.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <div class="input-container">
+                        <label for="messageInput" class="visually-hidden">Enter your message to the AI</label>
+                        <textarea 
+                            id="messageInput" 
+                            class="input-field" 
+                            placeholder="Type your message here..."
+                            rows="1"
+                            aria-describedby="inputHelp"
+                            aria-label="Message input"
+                        ></textarea>
+                        <span id="inputHelp" class="visually-hidden">Press Enter to send message, Shift+Enter for new line</span>
+                        <button class="send-button" id="sendButton" aria-label="Send message" type="button">
+                            <span aria-hidden="true">➤</span>
+                            <span class="visually-hidden">Send</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <aside class="sidebar" role="complementary" aria-label="Controls and Information">
+            <div class="sidebar-content">
+                <header class="header">
+                    <h1>AI Demonstration Tool</h1>
+                </header>
+
+                <section class="legend" aria-labelledby="legendTitle">
+                    <h2 id="legendTitle" class="legend-title">Confidence Levels</h2>
+                    <p class="legend-description">Hover over colored tokens in messages for details</p>
+                    <ul class="legend-items" role="list">
+                        <li class="legend-item">
+                            <div class="legend-color confidence-high" aria-hidden="true"></div>
+                            <span>High Confidence (greater than 70%)</span>
+                        </li>
+                        <li class="legend-item">
+                            <div class="legend-color confidence-medium" aria-hidden="true"></div>
+                            <span>Medium Confidence (30% to 70%)</span>
+                        </li>
+                        <li class="legend-item">
+                            <div class="legend-color confidence-low" aria-hidden="true"></div>
+                            <span>Low Confidence (less than 30%)</span>
+                        </li>
+                    </ul>
+                </section>
+                
+                <div style="padding: 1.5rem; border-top: 1px solid #e5e5e7;">
+                    <h2 style="color: #1a1a1a; font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">AI Demos</h2>
+                    <div class="demos-links">
+                        <a href="/tokenization" class="demo-link">
+                            <strong>Tokenization Demo</strong>
+                            <span>How AI splits text into tokens</span>
+                        </a>
+                        <a href="/confidence" class="demo-link demo-link-active" aria-current="page">
+                            <strong>Confidence Visualization</strong>
+                            <span>See AI confidence levels</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-bottom">
+                <section class="temperature-control" aria-labelledby="tempTitle">
+                    <div class="temperature-label">
+                        <span>Temperature:</span>
+                        <span id="temperatureValue" aria-label="Temperature value">0.7</span>
+                    </div>
+                    <label for="temperatureSlider" class="visually-hidden">
+                        Adjust AI temperature from 0.0 (stable) to 2.0 (chaotic)
+                    </label>
+                    <input 
+                        type="range" 
+                        id="temperatureSlider" 
+                        class="temperature-slider"
+                        min="0" 
+                        max="20" 
+                        value="7" 
+                        step="1"
+                        aria-describedby="tempRangeDesc"
+                        aria-valuemin="0"
+                        aria-valuemax="2.0"
+                        aria-valuenow="0.7"
+                        aria-valuetext="0.7"
+                    >
+                    <div id="tempRangeDesc" class="temperature-range">
+                        <span>Stable</span>
+                        <span class="detent-label">Start Here</span>
+                        <span>Chaotic</span>
+                    </div>
+                </section>
+                
+                <section class="output-mode-control" aria-labelledby="outputModeTitle">
+                    <div class="output-mode-label">Show Confidence Percentages?</div>
+                    <div class="output-mode-toggle">
+                        <div class="toggle-container">
+                            <input 
+                                type="checkbox" 
+                                id="outputModeToggle" 
+                                class="toggle-checkbox"
+                                aria-describedby="outputModeDesc"
+                            >
+                            <label for="outputModeToggle" class="toggle-label">
+                                <span class="toggle-slider" aria-hidden="true"></span>
+                                <span class="toggle-text-left" aria-hidden="true">Yes</span>
+                                <span class="toggle-text-right" aria-hidden="true">No</span>
+                                <span class="visually-hidden">Toggle confidence percentage display</span>
+                            </label>
+                        </div>
+                        <div id="outputModeDesc" class="visually-hidden">
+                            When enabled, shows exact confidence percentages. When disabled, shows only color coding.
+                        </div>
+                    </div>
+                </section>
+                
+                <footer class="footer-placeholder" role="contentinfo">
+                    <p>Copyright &copy; 2025 Edward Jensen. See on GitHub: <a href="https://github.com/edwardjensen/ai-confidence-demo" target="_blank" rel="noopener">edwardjensen/ai-confidence-demo<span class="visually-hidden"> (opens in new tab)</span></a>.</p>
+                    <p><a href="#" id="privacyPolicyLink" role="button" aria-haspopup="dialog">Privacy Policy</a></p>
+                    <div class="build-info">
+                        <p class="build-link">
+                            <a href="%BUILD_URL%" target="_blank" rel="noopener" title="View build details">
+                                Build %BUILD_ID% • <span id="buildTimestamp" data-utc="%BUILD_TIMESTAMP_ISO%">%BUILD_TIMESTAMP%</span><span class="visually-hidden"> (opens in new tab)</span>
+                            </a>
+                        </p>
+                        <p class="commit-info">Commit: <code>%BUILD_COMMIT%</code></p>
+                    </div>
+                </footer>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="privacy-modal" style="display: none;" role="dialog" aria-labelledby="privacyModalTitle" aria-describedby="privacyModalIntro" aria-modal="true">
+        <div class="privacy-modal-content">
+            <div class="privacy-modal-header">
+                <h2 id="privacyModalTitle">Privacy Policy</h2>
+                <button class="privacy-modal-close" aria-label="Close privacy policy dialog" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="privacy-modal-body" tabindex="0">
+                <section aria-labelledby="privacyIntroTitle">
+                    <h3 id="privacyIntroTitle">Introduction</h3>
+                    <p id="privacyModalIntro">This Privacy Policy outlines how we collect, use, and protect information when you use the AI Confidence Probabilities Demonstration tool. We are committed to safeguarding your privacy and ensuring compliance with applicable data protection laws. The only data collection services used on this website are Cloudflare and Plausible Analytics, both of which prioritize privacy and minimize data collection.</p>
+                </section>
+
+                <section aria-labelledby="dataCollectionTitle">
+                    <h3 id="dataCollectionTitle">Data Collection</h3>
+
+                    <h4>Cloudflare</h4>
+                    <p>We use Cloudflare to enhance the security and performance of our website. As part of its services, Cloudflare may process limited technical data, such as:</p>
+                    <ul>
+                        <li>IP addresses</li>
+                        <li>HTTP request headers</li>
+                        <li>Network metadata (e.g., protocol information like TCP/UDP)</li>
+                    </ul>
+                    <p>This data is collected to:</p>
+                    <ul>
+                        <li>Mitigate Distributed Denial of Service (DDoS) attacks</li>
+                        <li>Provide traffic visibility</li>
+                        <li>Ensure secure and efficient content delivery</li>
+                    </ul>
+                    <p>Cloudflare does not use cookies or track users across websites. It processes this data on our behalf in compliance with GDPR and other applicable laws. For more details, please refer to <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflare's privacy practices<span class="visually-hidden"> (opens in new tab)</span></a>.</p>
+
+                    <h4>Plausible Analytics</h4>
+                    <p>We use Plausible Analytics to understand website traffic trends without compromising visitor privacy. Plausible operates without cookies and does not collect personal or identifiable information. The data collected is entirely anonymous and includes:</p>
+                    <ul>
+                        <li>Aggregated page views</li>
+                        <li>Referring websites</li>
+                        <li>Browser types</li>
+                        <li>Device types</li>
+                    </ul>
+                    <p>Plausible ensures compliance with GDPR, CCPA, and other privacy regulations by adhering to principles of data minimization and pseudonymization.</p>
+
+                    <h4>AI Model Interactions</h4>
+                    <div class="privacy-important-notice" role="note" aria-labelledby="importantNoticeTitle">
+                        <h5 id="importantNoticeTitle"><strong>Important Notice:</strong></h5>
+                        <p>This application facilitates interactions with AI models through the OpenRouter service. We want to be completely transparent about how your AI interactions are handled:</p>
+                        <ul>
+                            <li><strong>No logging by us:</strong> Neither your submissions to the AI model nor the AI's responses are logged, stored, or retained by us for any purpose whatsoever.</li>
+                            <li><strong>Direct communication:</strong> Your messages are sent directly to the AI model through OpenRouter's API without any intermediate storage or processing on our servers.</li>
+                            <li><strong>Third-party processing:</strong> While we do not log your AI interactions, please note that OpenRouter and the underlying AI model providers may have their own data handling practices. We recommend reviewing <a href="https://openrouter.ai/privacy" target="_blank" rel="noopener">OpenRouter's privacy policy<span class="visually-hidden"> (opens in new tab)</span></a> for information about their data handling.</li>
+                            <li><strong>Local processing only:</strong> Any processing of AI responses (such as confidence highlighting) occurs entirely in your browser and is not transmitted back to our servers.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section aria-labelledby="dataUsageTitle">
+                    <h3 id="dataUsageTitle">How We Use Data</h3>
+                    <p>The limited data collected via Cloudflare and Plausible Analytics is used solely for the following purposes:</p>
+                    <ul>
+                        <li>Enhancing website security and performance</li>
+                        <li>Analyzing aggregate website traffic trends to improve user experience</li>
+                    </ul>
+                    <p>We do not sell, share, or use your data for advertising or tracking purposes. We do not have access to, store, or analyze any of your AI conversations or interactions.</p>
+                </section>
+
+                <section aria-labelledby="privacyRightsTitle">
+                    <h3 id="privacyRightsTitle">Your Privacy Rights</h3>
+                    <p>As a visitor, you have the following rights:</p>
+                    <ul>
+                        <li>To access information about how your data is processed</li>
+                        <li>To request the deletion of any personal data if applicable (note: no personal data is collected by this website)</li>
+                        <li>To object to any form of processing that may infringe on your rights (though all processing here complies with privacy laws)</li>
+                    </ul>
+                </section>
+
+                <section aria-labelledby="thirdPartiesTitle">
+                    <h3 id="thirdPartiesTitle">Third Parties</h3>
+                    <p>Both Cloudflare and Plausible Analytics act as third-party processors for this website. They are committed to maintaining high standards of privacy protection:</p>
+                    <ul>
+                        <li>Cloudflare adheres to GDPR and international data transfer frameworks (e.g., EU-U.S. Data Privacy Framework)</li>
+                        <li>Plausible Analytics operates within the European Union under strict privacy regulations</li>
+                    </ul>
+                    <p>Additionally, this application uses OpenRouter to facilitate AI model interactions. OpenRouter acts as an intermediary service, and their own privacy practices apply to the processing of your AI interactions.</p>
+                </section>
+
+                <section aria-labelledby="securityTitle">
+                    <h3 id="securityTitle">Security</h3>
+                    <p>We implement strict technical measures to protect all data processed through our website. Both Cloudflare and Plausible utilize encryption and other security protocols to safeguard your information. All AI interactions are conducted over secure HTTPS connections.</p>
+                </section>
+
+                <section aria-labelledby="updatesTitle">
+                    <h3 id="updatesTitle">Updates to This Policy</h3>
+                    <p>We may update this Privacy Policy from time to time to reflect changes in technology or legal requirements. Any updates will be posted on this page with a revised effective date.</p>
+                </section>
+
+                <div class="privacy-modal-footer">
+                    <p><strong>Last updated:</strong> <time datetime="2025-06-29">29 June 2025</time></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Environment variables will be injected here by build process -->
+    <script id="config">
+        window.AI_DEMO_CONFIG = {
+            apiKey: '%API_KEY%',
+            isProduction: %IS_PRODUCTION%
+        };
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

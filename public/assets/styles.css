@@ -1208,5 +1208,73 @@ button[aria-label] {
 }
 
 /* ==============================================
+   DEMO NAVIGATION STYLES
+   ============================================== */
+
+.demos-navigation {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e5e7;
+}
+
+.demos-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.demo-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.demo-link:hover {
+    background: #e9ecef;
+    border-color: #007aff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.demo-link strong {
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.demo-link span {
+    color: #666;
+    font-size: 0.8125rem;
+    line-height: 1.3;
+}
+
+.demo-link-active {
+    background: #007aff;
+    border-color: #0056cc;
+    color: white;
+}
+
+.demo-link-active strong {
+    color: white;
+}
+
+.demo-link-active span {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.demo-link-active:hover {
+    background: #0056cc;
+    color: white;
+    transform: none;
+}
+
+/* ==============================================
    END ACCESSIBILITY IMPROVEMENTS
    ============================================== */
