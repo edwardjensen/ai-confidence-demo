@@ -40,9 +40,6 @@ jobs:
     - name: Configure Environment Variables (Production only)
       if: github.ref == 'refs/heads/main'
       run: |
-        # Authenticate with Cloudflare
-        echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | wrangler auth login --api-token
-        
         # Deploy environment variables using Wrangler
         echo "🔐 Setting up secure environment variables..."
         
@@ -53,6 +50,9 @@ jobs:
           --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --env=production
           
         echo "✅ Environment variables configured successfully!"
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
     - name: Deployment Summary
       run: |
