@@ -100,7 +100,15 @@ export async function onRequestPost(context) {
         console.error('Function error:', error);
         return new Response(JSON.stringify({
             success: false,
-            error: 'Internal server error'
+            error: 'Internal server error',
+            debug: {
+                errorMessage: error.message,
+                errorStack: error.stack,
+                envKeys: Object.keys(env || {}),
+                processEnvKeys: Object.keys(process.env || {}),
+                hasEnvKey: !!env.OPENROUTER_API_KEY_V2,
+                hasProcessEnvKey: !!process.env.OPENROUTER_API_KEY_V2
+            }
         }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
