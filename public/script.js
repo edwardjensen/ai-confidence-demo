@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Use event delegation for dynamically added tooltips
     document.addEventListener('mouseenter', function(e) {
-        if (e.target.classList.contains('confidence-token')) {
+        if (e.target && e.target.classList && e.target.classList.contains('confidence-token')) {
             // Hide any currently visible tooltip
             if (currentTooltip) {
                 currentTooltip.classList.remove('visible');
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, true);
     
     document.addEventListener('mouseleave', function(e) {
-        if (e.target.classList.contains('confidence-token')) {
+        if (e.target && e.target.classList && e.target.classList.contains('confidence-token')) {
             const tooltip = e.target.querySelector('.tooltip');
             if (tooltip) {
                 tooltip.classList.remove('visible');
@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Also hide tooltips when mouse leaves the messages area entirely
     document.addEventListener('mouseleave', function(e) {
-        if (e.target.id === 'messages' || e.target.closest('#messages')) {
+        if (e.target && (e.target.id === 'messages' || (e.target.closest && e.target.closest('#messages')))) {
             if (currentTooltip) {
                 currentTooltip.classList.remove('visible');
                 currentTooltip = null;
@@ -696,7 +696,7 @@ function initializeAccessibility() {
     // const apiKeySubmit = document.getElementById('apiKeySubmit');
     // if (apiKeySubmit) {
     //     apiKeySubmit.addEventListener('click', setApiKey);
-    }
+    // }
     
     // Privacy policy link
     const privacyPolicyLink = document.getElementById('privacyPolicyLink');
