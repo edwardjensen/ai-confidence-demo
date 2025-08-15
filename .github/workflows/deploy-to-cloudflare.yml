@@ -44,10 +44,10 @@ jobs:
         echo "🔐 Setting up secure environment variables..."
         
         echo "${{ secrets.OPENROUTER_API_KEY_V2 }}" | wrangler pages secret put OPENROUTER_API_KEY_V2 \
-          --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --env=production
+          --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
         
         echo "${{ secrets.OPENAI_EMBEDDINGS_API_KEY }}" | wrangler pages secret put OPENAI_EMBEDDINGS_API_KEY \
-          --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --env=production
+          --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
           
         echo "✅ Environment variables configured successfully!"
       env:
