@@ -57,6 +57,11 @@ app.get('/tokenization', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'tokenization.html'));
 });
 
+// Serve the privacy policy page
+app.get('/privacy', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'privacy.html'));
+});
+
 // Handle 404s
 app.use((req, res) => {
     res.status(404).send(`

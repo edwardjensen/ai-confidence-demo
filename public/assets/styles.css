@@ -55,6 +55,7 @@ div.main-layout div.sidebar div.sidebar-bottom {
     display: flex !important;
     flex-direction: column !important;
     min-width: 0 !important;
+    overflow-y: auto !important;
 }
 
 .sidebar {
@@ -105,7 +106,7 @@ div.main-layout div.sidebar div.sidebar-bottom {
     box-shadow: 0 0 0 1px rgba(0,0,0,.1);
     margin: 1rem;
     border-radius: 0.5rem;
-    overflow: hidden;
+    overflow-y: auto;
     min-height: 0; /* Important for flex child to shrink */
 }
 
