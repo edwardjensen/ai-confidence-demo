@@ -11,12 +11,10 @@ export async function onRequestPost(context) {
         const apiKey = env.OPENROUTER_API_KEY_V2;
         
         console.log('Context env keys:', Object.keys(env || {}));
-        console.log('Process env keys:', Object.keys(process.env || {}));
         console.log('OPENROUTER_API_KEY_V2 from env:', !!apiKey);
-        console.log('OPENROUTER_API_KEY_V2 from process.env:', !!process.env.OPENROUTER_API_KEY_V2);
         
-        // Try both env and process.env
-        const finalApiKey = apiKey || process.env.OPENROUTER_API_KEY_V2;
+        // In Cloudflare Workers/Pages Functions, only use env
+        const finalApiKey = apiKey;
         
         if (!finalApiKey) {
             return new Response(JSON.stringify({
@@ -24,9 +22,7 @@ export async function onRequestPost(context) {
                 error: 'API key not configured',
                 debug: {
                     envKeys: Object.keys(env || {}),
-                    processEnvKeys: Object.keys(process.env || {}),
-                    hasEnvKey: !!apiKey,
-                    hasProcessEnvKey: !!process.env.OPENROUTER_API_KEY_V2
+                    hasEnvKey: !!apiKey
                 }
             }), {
                 status: 500,
@@ -105,9 +101,7 @@ export async function onRequestPost(context) {
                 errorMessage: error.message,
                 errorStack: error.stack,
                 envKeys: Object.keys(env || {}),
-                processEnvKeys: Object.keys(process.env || {}),
-                hasEnvKey: !!env.OPENROUTER_API_KEY_V2,
-                hasProcessEnvKey: !!process.env.OPENROUTER_API_KEY_V2
+                hasEnvKey: !!env.OPENROUTER_API_KEY_V2
             }
         }), {
             status: 500,

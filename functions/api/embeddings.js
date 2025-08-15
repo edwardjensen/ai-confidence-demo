@@ -11,12 +11,10 @@ export async function onRequestPost(context) {
         const apiKey = env.OPENAI_EMBEDDINGS_API_KEY;
         
         console.log('Context env keys:', Object.keys(env || {}));
-        console.log('Process env keys:', Object.keys(process.env || {}));
         console.log('OPENAI_EMBEDDINGS_API_KEY from env:', !!apiKey);
-        console.log('OPENAI_EMBEDDINGS_API_KEY from process.env:', !!process.env.OPENAI_EMBEDDINGS_API_KEY);
         
-        // Try both env and process.env
-        const finalApiKey = apiKey || process.env.OPENAI_EMBEDDINGS_API_KEY;
+        // In Cloudflare Workers/Pages Functions, only use env
+        const finalApiKey = apiKey;
         
         if (!finalApiKey) {
             return new Response(JSON.stringify({
@@ -24,9 +22,7 @@ export async function onRequestPost(context) {
                 error: 'API key not configured',
                 debug: {
                     envKeys: Object.keys(env || {}),
-                    processEnvKeys: Object.keys(process.env || {}),
-                    hasEnvKey: !!apiKey,
-                    hasProcessEnvKey: !!process.env.OPENAI_EMBEDDINGS_API_KEY
+                    hasEnvKey: !!apiKey
                 }
             }), {
                 status: 500,
@@ -125,9 +121,7 @@ export async function onRequestPost(context) {
                 errorMessage: error.message,
                 errorStack: error.stack,
                 envKeys: Object.keys(env || {}),
-                processEnvKeys: Object.keys(process.env || {}),
-                hasEnvKey: !!env.OPENAI_EMBEDDINGS_API_KEY,
-                hasProcessEnvKey: !!process.env.OPENAI_EMBEDDINGS_API_KEY
+                hasEnvKey: !!env.OPENAI_EMBEDDINGS_API_KEY
             }
         }), {
             status: 500,
