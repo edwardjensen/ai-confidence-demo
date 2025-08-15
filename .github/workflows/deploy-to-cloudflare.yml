@@ -30,15 +30,12 @@ jobs:
     - name: Install Wrangler
       run: npm install -g wrangler
 
-    - name: Deploy to Cloudflare Pages
-      uses: cloudflare/pages-action@v1
+    - name: 🚀 Deploy to Cloudflare Pages
+      uses: cloudflare/wrangler-action@v3
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        projectName: ai-confidence-demo
-        directory: dist
-        # Automatically deploy to production on main branch
-        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        command: pages deploy dist --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
 
     - name: Configure Environment Variables (Production only)
       if: github.ref == 'refs/heads/main'
@@ -50,10 +47,10 @@ jobs:
         echo "🔐 Setting up secure environment variables..."
         
         echo "${{ secrets.OPENROUTER_API_KEY_V2 }}" | wrangler pages secret put OPENROUTER_API_KEY_V2 \
-          --project-name=ai-confidence-demo --env=production
+          --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --env=production
         
         echo "${{ secrets.OPENAI_EMBEDDINGS_API_KEY }}" | wrangler pages secret put OPENAI_EMBEDDINGS_API_KEY \
-          --project-name=ai-confidence-demo --env=production
+          --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --env=production
           
         echo "✅ Environment variables configured successfully!"
 
