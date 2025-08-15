@@ -7,23 +7,11 @@ export async function onRequestPost(context) {
     
     try {
         // Get the OpenRouter API key from environment variables
-        // In Cloudflare Pages Functions, secrets are available via env
         const apiKey = env.OPENROUTER_API_KEY_V2;
-        
-        console.log('Context env keys:', Object.keys(env || {}));
-        console.log('OPENROUTER_API_KEY_V2 from env:', !!apiKey);
-        
-        // In Cloudflare Workers/Pages Functions, only use env
-        const finalApiKey = apiKey;
-        
-        if (!finalApiKey) {
+        if (!apiKey) {
             return new Response(JSON.stringify({
                 success: false,
-                error: 'API key not configured',
-                debug: {
-                    envKeys: Object.keys(env || {}),
-                    hasEnvKey: !!apiKey
-                }
+                error: 'API key not configured'
             }), {
                 status: 500,
                 headers: { 'Content-Type': 'application/json' }
@@ -57,7 +45,7 @@ export async function onRequestPost(context) {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${finalApiKey}`,
+                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': request.headers.get('referer') || 'https://ai-confidence-demo.pages.dev',
                 'X-Title': 'AI Confidence Demo'
@@ -96,13 +84,7 @@ export async function onRequestPost(context) {
         console.error('Function error:', error);
         return new Response(JSON.stringify({
             success: false,
-            error: 'Internal server error',
-            debug: {
-                errorMessage: error.message,
-                errorStack: error.stack,
-                envKeys: Object.keys(env || {}),
-                hasEnvKey: !!env.OPENROUTER_API_KEY_V2
-            }
+            error: 'Internal server error'
         }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
