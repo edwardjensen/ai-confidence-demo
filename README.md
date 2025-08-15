@@ -1,26 +1,46 @@
-# AI Demonstration Tools
+# AI Educational Demos
 
-A collection of web-based educational tools that demonstrate core AI concepts to help staff understand how AI models work and their limitations.
+A comprehensive collection of interactive web-based tools that demonstrate fundamental AI concepts. These educational demos help users understand how modern AI models work by visualizing the underlying processes of tokenization, semantic representation, and confidence assessment.
 
-For a detailed explanation of how this works and the concepts behind AI confidence measurement, see the supplemental blog post: [AI Confidence Probabilities](https://www.edwardjensen.net/posts/2025/2025-06/ai-confidence-probabilities)
+For detailed explanations of the concepts behind these demos, see the supplemental blog post: [AI Confidence Probabilities](https://www.edwardjensen.net/posts/2025/2025-06/ai-confidence-probabilities)
 
 ## Available Demos
 
-### 1. **Confidence Visualization** (`/`)
-- Interactive chat interface with AI
-- Real-time confidence visualization using color-coded tokens
-- Hover tooltips showing exact confidence percentages and alternatives
-- Token usage tracking for each exchange
+### 1. Tokenization Demo (`/tokenization`)
+
+**Discover how AI breaks down language into processable units**
+
+- Real-time text tokenization visualization as you type
+- Interactive token exploration with detailed explanations
+- Token statistics, compression ratios, and efficiency metrics
+- Visual representation of how AI models split text into tokens
+- Client-side processing using GPT-4 tokenization (cl100k_base encoding)
+- No API key required - runs entirely in your browser
+
+### 2. Embeddings Visualization (`/embeddings`)
+
+**Explore how AI represents concepts in high-dimensional space**
+
+- Interactive 2D scatterplot visualization of word embeddings
+- Category-based coloring (emotions, animals, actions, concepts)
+- Multiple dimension reduction techniques (t-SNE, PCA, UMAP)
+- Click-to-explore word details and semantic similarities
+- Real-time clustering and relationship analysis
+- Demonstrates semantic understanding and concept mapping
+
+### 3. Confidence Visualization (`/confidence`)
+
+**See the uncertainty and decision-making process behind AI responses**
+
+- Interactive chat interface with AI showing real-time confidence
+- Color-coded confidence levels for each generated token
+- Hover tooltips revealing exact probability scores and alternatives
+- Adjustable temperature settings to control response randomness
+- Token usage tracking and detailed response analysis
 - Log probabilities analysis demonstrating AI uncertainty
 
-### 2. **Tokenization Demo** (`/tokenization`)
-- Real-time text tokenization as you type
-- Visual representation of how AI models split text into tokens
-- Token statistics and compression ratios
-- Interactive token exploration with detailed explanations
-- Client-side processing using GPT-4 tokenization (cl100k_base encoding)
-
 ## Common Features
+
 - Clean, modern UI with consistent design language
 - Responsive design optimized for desktop and mobile
 - Accessibility features with proper ARIA labels
@@ -29,8 +49,11 @@ For a detailed explanation of how this works and the concepts behind AI confiden
 ## Files
 
 ### Core Application Files
-- `public/index.html` - Confidence visualization demo (main interface)
-- `public/tokenization.html` - Tokenization demonstration interface
+
+- `public/index.html` - Main landing page with demo navigation
+- `public/tokenization.html` - Tokenization demonstration interface  
+- `public/embeddings.html` - Embeddings visualization interface
+- `public/confidence.html` - Confidence visualization demo interface
 - `public/assets/styles.css` - Shared CSS styling for consistent design
 - `public/script.js` - JavaScript for confidence visualization
 - `server.js` - Node.js Express development server
@@ -38,6 +61,7 @@ For a detailed explanation of how this works and the concepts behind AI confiden
 - `package.json` - NPM configuration and dependencies
 
 ### Built Files (Generated)
+
 - `dist/` - Production-ready files created by build.sh
 
 ## Quick Start
@@ -84,17 +108,22 @@ The server will automatically:
 ## Setup
 
 1. Start the server using one of the methods above
-2. **Automatic Setup (Recommended)**: If you have a `.env.local` file with your API key, the application will automatically load it and be ready to use
-3. **Manual Setup**: If no environment file is found, enter your OpenRouter API key when prompted
+2. **Automatic Setup (Recommended)**: If you have a `.env.local` file with your API key, the confidence demo will automatically load it and be ready to use
+3. **Manual Setup**: If no environment file is found, enter your OpenRouter API key when prompted in the confidence demo
 4. **Navigate between demos:**
-   - Main page (`/`) - Confidence visualization with AI chat
-   - Tokenization demo (`/tokenization`) - Real-time text tokenization
-5. **For Confidence Demo:** Start chatting with the AI and hover over colored tokens to see confidence levels
-6. **For Tokenization Demo:** Type or paste text to see real-time tokenization
+   - Main page (`/`) - Demo selection and navigation hub
+   - Tokenization demo (`/tokenization`) - Real-time text tokenization (no API key required)
+   - Embeddings visualization (`/embeddings`) - Word vector space exploration (no API key required)
+   - Confidence demo (`/confidence`) - AI chat with confidence visualization (requires API key)
+5. **For Tokenization Demo:** Type or paste text to see real-time tokenization breakdown
+6. **For Embeddings Demo:** Explore the interactive scatterplot to see semantic relationships
+7. **For Confidence Demo:** Start chatting with the AI and hover over colored tokens to see confidence levels
 
 ## API Key Configuration
 
-You'll need an OpenRouter API key to use this tool. Get one at [openrouter.ai](https://openrouter.ai/).
+**Note:** An OpenRouter API key is only required for the **Confidence Visualization demo** (`/confidence`). The Tokenization and Embeddings demos run entirely in your browser and don't require any API key.
+
+For the Confidence demo, you'll need an OpenRouter API key. Get one at [openrouter.ai](https://openrouter.ai/).
 
 ### Method 1: Environment Variable (Recommended for Development)
 
@@ -106,32 +135,43 @@ OPENROUTER_API_KEY=sk-or-v1-your-actual-api-key-here
 
 Benefits:
 
-- Automatic loading on startup
+- Automatic loading for the confidence demo
 - No need to enter the key manually each time
 - Secure local development workflow
 
 ### Method 2: Manual Entry
 
-If you don't have a `.env.local` file, the application will prompt you to enter your API key manually through the web interface.
+If you don't have a `.env.local` file, the confidence demo will prompt you to enter your API key manually through the web interface.
 
-The tool uses the `openai/gpt-4o-mini` model with log probabilities enabled to show confidence levels.
+The confidence demo uses the `openai/gpt-4o-mini` model with log probabilities enabled to show confidence levels.
 
 ## How It Works
 
-### Confidence Visualization
+### Tokenization Demo
+- **Visual Breakdown**: See exactly how AI models split your text into processable tokens
+- **Real-time Processing**: Tokenization happens instantly as you type
+- **Statistical Analysis**: View token counts, compression ratios, and efficiency metrics
+- **Educational**: Learn why tokenization is fundamental to AI language understanding
 
+### Embeddings Visualization
+- **Semantic Mapping**: Explore how AI represents concepts as high-dimensional vectors
+- **Interactive Exploration**: Click and drag to explore relationships between words
+- **Category Visualization**: See how similar concepts cluster together in vector space
+- **Multiple Algorithms**: Switch between t-SNE, PCA, and UMAP dimension reduction techniques
+
+### Confidence Visualization
 - **Green tokens**: High confidence (>70%)
 - **Yellow tokens**: Medium confidence (30-70%)  
 - **Red tokens**: Low confidence (<30%)
 
-### Interactive Features
+### Interactive Features (Confidence Demo)
 
 Hover over any colored token to see:
 
 - Exact confidence percentage
 - Alternative token possibilities with their probabilities
 
-### Token Usage Tracking
+### Token Usage Tracking (Confidence Demo)
 
 Each AI response shows:
 
@@ -165,10 +205,11 @@ This helps you monitor API usage and understand the cost implications of your co
 
 ## Security Notes
 
-- **API Key Safety**: Your OpenRouter API key is only stored in your browser's memory and is never sent to any server other than OpenRouter's official API
+- **Privacy-First Design**: The Tokenization and Embeddings demos run entirely in your browser with no external API calls
+- **API Key Safety**: For the Confidence demo, your OpenRouter API key is only stored in your browser's memory and is never sent to any server other than OpenRouter's official API
 - **Local Server**: The web server runs locally on your machine and does not collect or transmit any data
 - **Environment Variables**: When using `.env.local`, your API key is only accessible to your local development server and never exposed to external services
-- **Client-Side Processing**: All confidence visualization happens in your browser
+- **Client-Side Processing**: All tokenization and embeddings visualization happens in your browser without any data transmission
 
 ## Browser Compatibility
 

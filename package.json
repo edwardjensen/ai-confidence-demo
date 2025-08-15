@@ -1,7 +1,7 @@
 {
-  "name": "ai-confidence-demo",
-  "version": "1.0.0",
-  "description": "AI Confidence Demonstration Tool with log probabilities visualization",
+  "name": "ai-demos",
+  "version": "2.0.0",
+  "description": "Demonstrations of how AI works under the hood",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,8 +13,10 @@
   "keywords": [
     "ai",
     "confidence",
+    "embeddings",
     "logprobs",
     "openrouter",
+    "tokenization",
     "visualization"
   ],
   "author": "Edward Jensen",
