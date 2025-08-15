@@ -26,35 +26,14 @@ cp -r node_modules/gpt-tokenizer/esm/* dist/assets/gpt-tokenizer/
 mkdir -p dist/assets/gpt-tokenizer/data
 cp -r node_modules/gpt-tokenizer/data/* dist/assets/gpt-tokenizer/data/
 
-# Replace API key placeholder in confidence.html
-if [ -z "$OPENROUTER_API_KEY" ]; then
-    echo "⚠️  OPENROUTER_API_KEY environment variable is not set"
-    echo "🔧 Building for local development (API key input will be required)"
-    
-    # For local development, keep the placeholder so the app will show API key input
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS - replace with a clear development placeholder
-        sed -i '' "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/confidence.html
-        sed -i '' "s/%IS_PRODUCTION%/false/g" dist/confidence.html
-    else
-        # Linux
-        sed -i "s/%API_KEY%/DEVELOPMENT_MODE_NO_KEY/g" dist/confidence.html
-        sed -i "s/%IS_PRODUCTION%/false/g" dist/confidence.html
-    fi
-else
-    echo "🔑 Injecting API key into build..."
-    
-    # Replace the placeholder with the actual API key
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS
-        sed -i '' "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/confidence.html
-        sed -i '' "s/%IS_PRODUCTION%/true/g" dist/confidence.html
-    else
-        # Linux
-        sed -i "s/%API_KEY%/$OPENROUTER_API_KEY/g" dist/confidence.html
-        sed -i "s/%IS_PRODUCTION%/true/g" dist/confidence.html
-    fi
-fi
+# Copy Plotly.js library files for embeddings visualization
+echo "📊 Bundling Plotly.js library files..."
+mkdir -p dist/assets/plotly
+cp node_modules/plotly.js-dist-min/plotly.min.js dist/assets/plotly/
+
+# Note: API keys are now handled securely by Cloudflare Functions
+# No client-side API key injection needed
+echo "🔒 API keys secured via Cloudflare Functions"
 
 # Process build info if available
 if [ -f "build-data/buildinfo.yml" ]; then
@@ -70,7 +49,7 @@ if [ -f "build-data/buildinfo.yml" ]; then
     # Create fallback display timestamp from ISO
     TIMESTAMP_DISPLAY=$(date -d "$TIMESTAMP_ISO" -u '+%Y-%m-%d %H:%M:%S UTC' 2>/dev/null || date -u -j -f "%Y-%m-%dT%H:%M:%SZ" "$TIMESTAMP_ISO" '+%Y-%m-%d %H:%M:%S UTC' 2>/dev/null || echo "$TIMESTAMP_ISO")
     
-    # Replace build info placeholders
+    # Replace build info placeholders in both confidence.html and embeddings.html
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
         sed -i '' "s|%BUILD_COMMIT%|${COMMIT}|g" dist/confidence.html
@@ -78,6 +57,7 @@ if [ -f "build-data/buildinfo.yml" ]; then
         sed -i '' "s|%BUILD_URL%|${BUILD_URL}|g" dist/confidence.html
         sed -i '' "s|%BUILD_TIMESTAMP%|${TIMESTAMP_DISPLAY}|g" dist/confidence.html
         sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/confidence.html
+        # embeddings.html doesn't have build info placeholders, but we'll add them if needed
     else
         # Linux
         sed -i "s|%BUILD_COMMIT%|${COMMIT}|g" dist/confidence.html
@@ -85,6 +65,7 @@ if [ -f "build-data/buildinfo.yml" ]; then
         sed -i "s|%BUILD_URL%|${BUILD_URL}|g" dist/confidence.html
         sed -i "s|%BUILD_TIMESTAMP%|${TIMESTAMP_DISPLAY}|g" dist/confidence.html
         sed -i "s|%BUILD_TIMESTAMP_ISO%|${TIMESTAMP_ISO}|g" dist/confidence.html
+        # embeddings.html doesn't have build info placeholders, but we'll add them if needed
     fi
 else
     echo "⚠️  No build info found, running in local development mode..."
@@ -99,6 +80,7 @@ else
         sed -i '' "s|%BUILD_URL%|#|g" dist/confidence.html
         sed -i '' "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/confidence.html
         sed -i '' "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/confidence.html
+        # embeddings.html doesn't have build info placeholders currently
     else
         # Linux
         sed -i "s|%BUILD_COMMIT%|Development|g" dist/confidence.html
@@ -106,6 +88,7 @@ else
         sed -i "s|%BUILD_URL%|#|g" dist/confidence.html
         sed -i "s|%BUILD_TIMESTAMP%|${CURRENT_TIMESTAMP}|g" dist/confidence.html
         sed -i "s|%BUILD_TIMESTAMP_ISO%|${CURRENT_TIMESTAMP_ISO}|g" dist/confidence.html
+        # embeddings.html doesn't have build info placeholders currently
     fi
 fi
 
