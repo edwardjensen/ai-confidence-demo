@@ -1046,10 +1046,11 @@
             generateButton.textContent = 'Generating...';
             
             try {
-                const newWords = await addUserEmbeddings(words);
+                // Reset existing user-generated embeddings
+                allWords = allWords.filter(word => word.source !== 'user');
+                userGeneratedWords = [];
                 
-                // Clear input
-                liveTextInput.value = '';
+                const newWords = await addUserEmbeddings(words);
                 
                 // Auto-select "Your Words" in the data source and category filters
                 dataSource.value = 'user';
