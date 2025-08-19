@@ -109,11 +109,30 @@ app.post('/api/embeddings', async (req, res) => {
         
         // Limit inputs to prevent abuse
         const inputs = Array.isArray(input) ? input : [input];
-        if (inputs.length > 50) {
+        if (inputs.length > 200) {
             return res.status(400).json({
                 success: false,
-                error: 'Too many inputs. Maximum 50 allowed.'
+                error: 'Too many inputs. Maximum 200 allowed.'
             });
+        }
+        
+        // Limit input length to prevent abuse
+        const totalLength = inputs.join(' ').length;
+        if (totalLength > 25000) {
+            return res.status(400).json({
+                success: false,
+                error: 'Input too long. Maximum 25,000 characters allowed.'
+            });
+        }
+        
+        const requestBody = {
+            input: input,
+            model: model || 'text-embedding-3-small'
+        };
+        
+        // Add dimensions only if explicitly specified and different from default
+        if (dimensions && dimensions !== 1536) {
+            requestBody.dimensions = dimensions;
         }
         
         const response = await fetch('https://api.openai.com/v1/embeddings', {
@@ -122,20 +141,22 @@ app.post('/api/embeddings', async (req, res) => {
                 'Authorization': `Bearer ${openaiKey}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                input: input,
-                model: model || 'text-embedding-3-small',
-                dimensions: dimensions || 1536
-            })
+            body: JSON.stringify(requestBody)
         });
         
         const data = await response.json();
         
         if (!response.ok) {
-            console.error('OpenAI API Error:', data);
+            console.error('OpenAI API Error:', {
+                status: response.status,
+                statusText: response.statusText,
+                error: data,
+                request: requestBody
+            });
             return res.status(response.status).json({
                 success: false,
-                error: data.error?.message || 'API request failed'
+                error: data.error?.message || `API request failed: ${response.status} ${response.statusText}`,
+                details: data.error
             });
         }
         

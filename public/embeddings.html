@@ -321,7 +321,7 @@
                                 <textarea 
                                     id="liveTextInput" 
                                     class="input-textarea" 
-                                    placeholder="Type any text here - it will be split into individual words automatically..."
+                                    placeholder="Enter words or phrases separated by commas (e.g., 'cat, dog, running, beautiful house')..."
                                     rows="3"
                                     style="flex: 1; min-height: auto; resize: vertical;"
                                     aria-describedby="liveInputHelp"
@@ -331,7 +331,7 @@
                                 </button>
                             </div>
                             <div id="liveInputHelp" class="control-note" style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">
-                                Enter any text - each individual word will get its own embedding. Try phrases like "happy dog running fast" to see how related words cluster together.
+                                Enter words or phrases separated by commas. Each item will get its own embedding. Try terms like "happy, excited dog, running fast" to see how related concepts cluster together.
                             </div>
                         </div>
                     </div>
@@ -339,6 +339,15 @@
                     <!-- Controls Section -->
                     <div class="controls-section">
                         <div class="controls-grid">
+                            <div class="control-group">
+                                <label class="control-label">Quick Start:</label>
+                                <button id="loadNonprofitWords" class="control-button" style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
+                                    Load & Focus on Nonprofit Terms
+                                </button>
+                                <div class="control-note" style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">
+                                    Loads 100+ nonprofit and CDFI terms, then focuses the visualization to show only these terms for better clustering analysis.
+                                </div>
+                            </div>
                             <div class="control-group">
                                 <label for="dataSource" class="control-label">Data Source:</label>
                                 <select id="dataSource" class="control-select" aria-describedby="dataSourceHelp">
@@ -360,6 +369,7 @@
                                     <option value="places">Places</option>
                                     <option value="time">Time</option>
                                     <option value="nature">Nature</option>
+                                    <option value="nonprofit">Nonprofit</option>
                                     <option value="user">Your Words</option>
                                 </select>
                                 <div id="categoryHelp" class="sr-only">Filter the visualization to show only specific categories of words</div>
@@ -614,6 +624,60 @@
                 { word: "cloud", x: -0.7, y: -3.7, category: "nature" },
                 { word: "wind", x: -1.0, y: -4.3, category: "nature" },
                 { word: "rain", x: -1.3, y: -3.6, category: "nature" }
+            ],
+            "nonprofit": [
+                { word: "executive director", x: 2.5, y: 3.8, category: "nonprofit" },
+                { word: "board governance", x: 2.2, y: 3.5, category: "nonprofit" },
+                { word: "fundraising", x: 3.1, y: 3.2, category: "nonprofit" },
+                { word: "grant writing", x: 2.8, y: 3.9, category: "nonprofit" },
+                { word: "donor relations", x: 3.4, y: 3.6, category: "nonprofit" },
+                { word: "charitable giving", x: 3.0, y: 4.1, category: "nonprofit" },
+                { word: "tax exemption", x: 1.8, y: 3.3, category: "nonprofit" },
+                { word: "501c3", x: 1.5, y: 3.0, category: "nonprofit" },
+                { word: "mission statement", x: 2.9, y: 4.3, category: "nonprofit" },
+                { word: "strategic planning", x: 2.6, y: 3.7, category: "nonprofit" },
+                { word: "program evaluation", x: 2.3, y: 4.0, category: "nonprofit" },
+                { word: "impact measurement", x: 2.7, y: 4.2, category: "nonprofit" },
+                { word: "beneficiaries", x: 3.3, y: 3.8, category: "nonprofit" },
+                { word: "stakeholders", x: 2.4, y: 3.4, category: "nonprofit" },
+                { word: "volunteers", x: 3.6, y: 4.4, category: "nonprofit" },
+                { word: "board members", x: 2.1, y: 3.6, category: "nonprofit" },
+                { word: "trustees", x: 1.9, y: 3.2, category: "nonprofit" },
+                { word: "annual report", x: 2.0, y: 3.8, category: "nonprofit" },
+                { word: "financial transparency", x: 1.7, y: 3.1, category: "nonprofit" },
+                { word: "accountability", x: 1.6, y: 3.5, category: "nonprofit" },
+                { word: "stewardship", x: 3.2, y: 4.0, category: "nonprofit" },
+                { word: "development officer", x: 3.5, y: 3.3, category: "nonprofit" },
+                { word: "major gifts", x: 3.7, y: 3.7, category: "nonprofit" },
+                { word: "planned giving", x: 3.8, y: 4.1, category: "nonprofit" },
+                { word: "capital campaign", x: 3.9, y: 3.9, category: "nonprofit" },
+                { word: "endowment", x: 4.0, y: 3.4, category: "nonprofit" },
+                { word: "foundation grants", x: 4.1, y: 3.8, category: "nonprofit" },
+                { word: "corporate sponsorship", x: 4.2, y: 4.2, category: "nonprofit" },
+                { word: "individual donors", x: 4.3, y: 3.6, category: "nonprofit" },
+                { word: "membership dues", x: 3.0, y: 3.1, category: "nonprofit" },
+                { word: "special events", x: 4.4, y: 4.0, category: "nonprofit" },
+                { word: "gala dinner", x: 4.5, y: 3.5, category: "nonprofit" },
+                { word: "auction fundraiser", x: 4.6, y: 3.9, category: "nonprofit" },
+                { word: "crowdfunding", x: 4.7, y: 4.3, category: "nonprofit" },
+                { word: "online donations", x: 4.8, y: 3.7, category: "nonprofit" },
+                { word: "recurring gifts", x: 4.9, y: 4.1, category: "nonprofit" },
+                { word: "donor retention", x: 5.0, y: 3.8, category: "nonprofit" },
+                { word: "prospect research", x: 5.1, y: 3.4, category: "nonprofit" },
+                { word: "gift acknowledgment", x: 5.2, y: 4.2, category: "nonprofit" },
+                { word: "donor stewardship", x: 5.3, y: 3.6, category: "nonprofit" },
+                { word: "legacy giving", x: 5.4, y: 4.0, category: "nonprofit" },
+                { word: "tribute gifts", x: 5.5, y: 3.3, category: "nonprofit" },
+                { word: "matching gifts", x: 5.6, y: 3.9, category: "nonprofit" },
+                { word: "grant compliance", x: 5.7, y: 4.4, category: "nonprofit" },
+                { word: "program officer", x: 5.8, y: 3.7, category: "nonprofit" },
+                { word: "capacity building", x: 5.9, y: 4.1, category: "nonprofit" },
+                { word: "sustainability", x: 6.0, y: 3.5, category: "nonprofit" },
+                { word: "social impact", x: 6.1, y: 3.8, category: "nonprofit" },
+                { word: "community outreach", x: 6.2, y: 4.2, category: "nonprofit" },
+                { word: "advocacy", x: 6.3, y: 3.4, category: "nonprofit" },
+                { word: "lobbying restrictions", x: 6.4, y: 3.6, category: "nonprofit" },
+                { word: "public benefit", x: 6.5, y: 4.0, category: "nonprofit" }
             ]
         };
         
@@ -627,6 +691,7 @@
             places: '#ff9ff3',
             time: '#fd9644',
             nature: '#6c5ce7',
+            nonprofit: '#e74c3c',
             user: '#2ecc71'
         };
         
@@ -647,8 +712,8 @@
                 },
                 body: JSON.stringify({
                     input: texts,
-                    model: 'text-embedding-3-small',
-                    dimensions: 1536
+                    model: 'text-embedding-3-small'
+                    // Using default dimensions (1536) for text-embedding-3-small
                 })
             });
             
@@ -940,11 +1005,10 @@
                 return;
             }
             
-            // Split input into individual words, removing punctuation and empty strings
+            // Split input by commas and clean up each item
             const words = input
-                .toLowerCase()
-                .replace(/[^\w\s]/g, ' ')  // Replace punctuation with spaces
-                .split(/\s+/)  // Split on any whitespace
+                .split(',')  // Split on commas
+                .map(item => item.trim().toLowerCase())  // Clean whitespace and convert to lowercase
                 .filter(w => w.length > 0)  // Remove empty strings
                 .filter((word, index, array) => array.indexOf(word) === index); // Remove duplicates
             
@@ -1000,6 +1064,56 @@
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                 handleGenerateEmbeddings();
             }
+        });
+        
+        // Load nonprofit words functionality
+        document.getElementById('loadNonprofitWords').addEventListener('click', function() {
+            // Create comma-separated string of all nonprofit terms
+            const nonprofitTerms = [
+                'executive director', 'board governance', 'fundraising', 'grant writing', 'donor relations',
+                'charitable giving', 'tax exemption', '501c3', 'mission statement', 'strategic planning',
+                'program evaluation', 'impact measurement', 'beneficiaries', 'stakeholders', 'volunteers',
+                'board members', 'trustees', 'annual report', 'financial transparency', 'accountability',
+                'stewardship', 'development officer', 'major gifts', 'planned giving', 'capital campaign',
+                'endowment', 'foundation grants', 'corporate sponsorship', 'individual donors', 'membership dues',
+                'special events', 'gala dinner', 'auction fundraiser', 'crowdfunding', 'online donations',
+                'recurring gifts', 'donor retention', 'prospect research', 'gift acknowledgment', 'donor stewardship',
+                'legacy giving', 'tribute gifts', 'matching gifts', 'grant compliance', 'program officer',
+                'capacity building', 'sustainability', 'social impact', 'community outreach', 'advocacy',
+                'lobbying restrictions', 'public benefit', 'charitable purpose', 'board recruitment', 'governance policies',
+                'conflict of interest', 'fiduciary duty', 'executive compensation', 'overhead ratios', 'program expenses',
+                'administrative costs', 'restricted funds', 'unrestricted funds', 'designated gifts', 'budget planning',
+                'financial oversight', 'audit requirements', 'public disclosure', 'transparency', 'ethical fundraising',
+                'donor privacy', 'case for support', 'solicitation', 'cultivation', 'proposal writing',
+                'outcome measurement', 'logic models', 'theory of change', 'evidence-based practice', 'best practices',
+                'peer review', 'collaboration', 'partnerships', 'coalition building', 'networking',
+                'resource sharing', 'volunteer management', 'board development', 'leadership transition', 'succession planning',
+                'risk management', 'insurance coverage', 'legal compliance', 'employment law', 'volunteer screening',
+                'background checks', 'safeguarding policies', 'data protection', 'privacy policies', 'website accessibility',
+                'digital marketing', 'social media strategy', 'email campaigns', 'newsletter', 'communications plan',
+                'brand management', 'public relations', 'media outreach', 'storytelling', 'case studies',
+                'testimonials', 'photography consent', 'marketing materials', 'annual giving', 'monthly donors',
+                'community development', 'financial institution', 'cdfi certification', 'microfinance', 'small business lending',
+                'affordable housing', 'community investment', 'loan fund', 'credit building', 'financial inclusion',
+                'underserved markets', 'low income communities', 'community reinvestment'
+            ];
+            
+            // Set the text input with comma-separated terms
+            liveTextInput.value = nonprofitTerms.join(', ');
+            
+            // Automatically generate embeddings
+            handleGenerateEmbeddings();
+            
+            // Set data source to show only user words and category filter to user words
+            dataSource.value = 'user';
+            categoryFilter.value = 'user';
+            currentDataSource = 'user';
+            currentFilter = 'user';
+            
+            // Update the plot after a short delay to allow embeddings to process
+            setTimeout(() => {
+                updatePlot();
+            }, 1000);
         });
         
         // Initialize

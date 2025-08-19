@@ -1,13 +1,14 @@
 /**
  * Cloudflare Function to proxy OpenAI embeddings API calls securely
  * This keeps the OpenAI API key secure on the server side
+ * Note: OpenRouter doesn't support embeddings, so we use OpenAI directly
  */
 export async function onRequestPost(context) {
     const { request, env } = context;
     
     try {
         // Get the OpenAI API key from environment variables
-        const apiKey = env.OPENAI_EMBEDDINGS_API_KEY;
+        const apiKey = env.OPENAI_KEY || env.OPENAI_EMBEDDINGS_API_KEY;
         if (!apiKey) {
             return new Response(JSON.stringify({
                 success: false,
@@ -34,10 +35,10 @@ export async function onRequestPost(context) {
         
         // Limit the number of inputs to prevent abuse
         const inputs = Array.isArray(body.input) ? body.input : [body.input];
-        if (inputs.length > 50) {
+        if (inputs.length > 200) {
             return new Response(JSON.stringify({
                 success: false,
-                error: 'Too many inputs. Maximum 50 allowed.'
+                error: 'Too many inputs. Maximum 200 allowed.'
             }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
@@ -46,10 +47,10 @@ export async function onRequestPost(context) {
         
         // Limit input length to prevent abuse
         const totalLength = inputs.join(' ').length;
-        if (totalLength > 10000) {
+        if (totalLength > 25000) {
             return new Response(JSON.stringify({
                 success: false,
-                error: 'Input too long. Maximum 10,000 characters allowed.'
+                error: 'Input too long. Maximum 25,000 characters allowed.'
             }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
@@ -59,9 +60,14 @@ export async function onRequestPost(context) {
         // Prepare the request to OpenAI
         const openAIRequest = {
             input: body.input,
-            model: body.model || 'text-embedding-3-small',
-            dimensions: body.dimensions || 1536
+            model: body.model || 'text-embedding-3-small'
+            // Note: dimensions parameter removed - using default 1536 for text-embedding-3-small
         };
+        
+        // Add dimensions only if explicitly specified and different from default
+        if (body.dimensions && body.dimensions !== 1536) {
+            openAIRequest.dimensions = body.dimensions;
+        }
         
         // Make the request to OpenAI
         const response = await fetch('https://api.openai.com/v1/embeddings', {
@@ -76,10 +82,16 @@ export async function onRequestPost(context) {
         const data = await response.json();
         
         if (!response.ok) {
-            console.error('OpenAI API Error:', data);
+            console.error('OpenAI API Error:', {
+                status: response.status,
+                statusText: response.statusText,
+                error: data,
+                request: openAIRequest
+            });
             return new Response(JSON.stringify({
                 success: false,
-                error: data.error?.message || 'API request failed'
+                error: data.error?.message || `API request failed: ${response.status} ${response.statusText}`,
+                details: data.error
             }), {
                 status: response.status,
                 headers: { 'Content-Type': 'application/json' }
