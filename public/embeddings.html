@@ -29,9 +29,9 @@
     <meta name="theme-color" content="#1a1a1a">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/webp" href="assets/confidencesiteicon.webp">
-    <link rel="icon" type="image/jpeg" href="assets/confidencesiteicon.jpg">
-    <link rel="apple-touch-icon" href="assets/confidencesiteicon.jpg">
+    <link rel="icon" type="image/webp" href="assets/ai-confidence-demo-logo-solid-bg.webp">
+    <link rel="icon" type="image/png" href="assets/ai-confidence-demo-logo-solid-bg.png">
+    <link rel="apple-touch-icon" href="assets/ai-confidence-demo-logo-solid-bg.png">
     
     <link rel="stylesheet" href="assets/styles.css">
     <style>
@@ -298,6 +298,29 @@
             background: #ccc !important;
             cursor: not-allowed !important;
         }
+        
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #007aff;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+            transition: color 0.2s ease;
+        }
+        
+        .home-link:hover {
+            color: #0056cc;
+            text-decoration: underline;
+        }
+        
+        .home-link::before {
+            content: "←";
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -502,6 +525,7 @@
             
             <div class="sidebar-bottom">
                 <div style="padding: 1.5rem;">
+                    <a href="/" class="home-link" style="display: block; margin-bottom: 1rem;">← Back to Home</a>
                     <p style="font-size: 0.8rem; color: #666; line-height: 1.4;">
                         <strong>Demo Notes:</strong><br>
                         This demo shows how AI models understand word meanings through numerical representations. Type your own text to generate live embeddings and see where your words appear in relation to others.

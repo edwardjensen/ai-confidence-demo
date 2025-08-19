@@ -29,9 +29,9 @@
     <meta name="theme-color" content="#1a1a1a">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/webp" href="assets/confidencesiteicon.webp">
-    <link rel="icon" type="image/jpeg" href="assets/confidencesiteicon.jpg">
-    <link rel="apple-touch-icon" href="assets/confidencesiteicon.jpg">
+    <link rel="icon" type="image/webp" href="assets/ai-confidence-demo-logo-solid-bg.webp">
+    <link rel="icon" type="image/png" href="assets/ai-confidence-demo-logo-solid-bg.png">
+    <link rel="apple-touch-icon" href="assets/ai-confidence-demo-logo-solid-bg.png">
     
     <link rel="stylesheet" href="assets/styles.css">
     <style>
@@ -48,6 +48,27 @@
         .landing-header {
             text-align: center;
             margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .header-content {
+            text-align: left;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .header-logo {
+            flex-shrink: 0;
+        }
+        
+        .header-logo img {
+            width: 120px;
+            height: auto;
+            max-width: 120px;
         }
         
         .landing-header h1 {
@@ -63,7 +84,7 @@
             font-size: 1.25rem;
             line-height: 1.6;
             max-width: 600px;
-            margin: 0 auto;
+            margin: 0;
         }
         
         .intro-placeholder {
@@ -174,6 +195,16 @@
                 padding: 1rem;
             }
             
+            .landing-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-content {
+                text-align: center;
+                min-width: auto;
+            }
+            
             .landing-header h1 {
                 font-size: 2rem;
             }
@@ -191,8 +222,16 @@
     
     <main id="main-content" class="landing-container" role="main">
         <header class="landing-header">
-            <h1>AI Educational Demos</h1>
-            <p class="subtitle">Interactive demonstrations to help you understand how AI models work</p>
+            <div class="header-content">
+                <h1>AI Educational Demos</h1>
+                <p class="subtitle">Interactive demonstrations to help you understand how AI models work</p>
+            </div>
+            <div class="header-logo">
+                <picture>
+                    <source srcset="assets/ai-confidence-demo-logo-v2.webp" type="image/webp">
+                    <img src="assets/ai-confidence-demo-logo-v2.png" alt="Icon showing a dark blue human head profile in silhouette with white circuit board pattern inside representing artificial intelligence or digital thinking" loading="lazy">
+                </picture>
+            </div>
         </header>
         
         <!-- <section class="intro-placeholder">
