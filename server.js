@@ -147,16 +147,10 @@ app.post('/api/embeddings', async (req, res) => {
         const data = await response.json();
         
         if (!response.ok) {
-            console.error('OpenAI API Error:', {
-                status: response.status,
-                statusText: response.statusText,
-                error: data,
-                request: requestBody
-            });
+            console.error('OpenAI API Error:', data);
             return res.status(response.status).json({
                 success: false,
-                error: data.error?.message || `API request failed: ${response.status} ${response.statusText}`,
-                details: data.error
+                error: data.error?.message || 'API request failed'
             });
         }
         

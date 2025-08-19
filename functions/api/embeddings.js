@@ -82,16 +82,10 @@ export async function onRequestPost(context) {
         const data = await response.json();
         
         if (!response.ok) {
-            console.error('OpenAI API Error:', {
-                status: response.status,
-                statusText: response.statusText,
-                error: data,
-                request: openAIRequest
-            });
+            console.error('OpenAI API Error:', data);
             return new Response(JSON.stringify({
                 success: false,
-                error: data.error?.message || `API request failed: ${response.status} ${response.statusText}`,
-                details: data.error
+                error: data.error?.message || 'API request failed'
             }), {
                 status: response.status,
                 headers: { 'Content-Type': 'application/json' }
