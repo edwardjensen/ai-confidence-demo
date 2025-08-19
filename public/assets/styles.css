@@ -14,6 +14,13 @@ body {
     overflow: hidden; /* Prevent body scroll */
 }
 
+/* Allow scrolling on the landing page */
+body:has(.landing-container) {
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+}
+
 /* Main responsive layout */
 div.main-layout {
     display: flex !important;
